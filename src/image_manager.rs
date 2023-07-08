@@ -17,10 +17,8 @@ use rocket::{Data, State};
 /// Route for handling image loading
 #[get("/api/image/<url>")]
 pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
-
     let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
     Ok(Json(meta))
-
 }
 
 /// Route for handling business logic for uploading of an image
@@ -34,21 +32,33 @@ pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<
 
     let img = image::load_from_memory(&buf).map_err(|e| format!("Failed to load image: {}", e))?;
 
-    let meta_data = generate_metadata()?;
+    // Extracts the image format from the image
+    let extension = match image::guess_format(&buf) {
+        Ok(format) => format.extensions_str()[0],
+        Err(_) => {return Err("Image format was not recognized!".to_string()); }
+    };
+
+    let meta_data = generate_metadata(extension.to_string())?;
 
     save_image(&img, &meta_data)?;
 
-    database::write_image(pool, &meta_data).await.map_err(|_| "Failed to save image")?;
+    database::write_image(pool, &meta_data).await.map_err(|e| format!("Failed to save image: {}", e))?;
 
     Ok("Image uploaded successfully".into())
 }
 
-/// Saves an image to the file system given a list bytes
+/// Saves an image to the file system given an `DynamicImage`
 /// Returns a human readable error if unsuccessful
+///
 /// Does **not** save image meta data to database
+///
+/// The image will save in the `./images/full/` directory with the URL specified in meta_data as
+/// the name and with the extension of the uploaded image
+/// The image will also save a 500x500 thumbnail in the `./images/thumbnail/` directory with the URL
+/// specified as the name and the jpg extension
 fn save_image(img: &DynamicImage, meta_data: &ImageMeta) -> Result<(), String> {
     // Save the image to a file
-    let mut file = File::create(format!("./images/full/{}.jpg", meta_data.url))
+    let mut file = File::create(format!("./images/full/{}.{}", meta_data.url, meta_data.file_extension))
         .map_err(|e| format!("Failed to create file: {}", e))?;
     img.write_to(&mut file, image::ImageOutputFormat::Jpeg(100))
         .map_err(|e| format!("Failed to write image data: {}", e))?;
@@ -65,7 +75,7 @@ fn save_image(img: &DynamicImage, meta_data: &ImageMeta) -> Result<(), String> {
 }
 
 /// Generates image meta data from the current time
-fn generate_metadata() -> Result<ImageMeta, String> {
+fn generate_metadata(file_extension: String) -> Result<ImageMeta, String> {
     // Generate a random name for the image file
     let filename: String = thread_rng()
         .sample_iter(&Alphanumeric)
@@ -73,6 +83,7 @@ fn generate_metadata() -> Result<ImageMeta, String> {
         .map(char::from)
         .collect::<String>();
     Ok(ImageMeta {
+        file_extension,
         privacy: models::Privacy::Unspecified,
         uploaded: SystemTime::now(),
         print_available: false,
@@ -88,7 +99,8 @@ mod test {
 
     #[test]
     fn generate_metadata_test() {
-        let meta = generate_metadata().unwrap(); 
+        let meta = generate_metadata("jpg".to_string()).unwrap(); 
         assert_eq!(meta.url.len(), 10);
+        assert_eq!(meta.file_extension, "jpg");
     }
 }

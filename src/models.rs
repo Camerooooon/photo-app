@@ -6,6 +6,7 @@ use rocket::serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct ImageMeta {
+    pub file_extension: String,
     pub privacy: Privacy,
     pub uploaded: SystemTime,
     pub print_available: bool,
@@ -23,7 +24,7 @@ pub struct ImageGroup {
 }
 
 /// The privacy level of a group of images
-#[derive(strum_macros::Display, Serialize, Deserialize, sqlx::Type)]
+#[derive(PartialEq, Eq, strum_macros::Display, Serialize, Deserialize, sqlx::Type)]
 #[serde(crate = "rocket::serde")]
 pub enum Privacy {
     /// Image will appear on front page, group will appear on front page

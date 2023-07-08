@@ -1,8 +1,10 @@
 -- Initialise table for the images
 CREATE TABLE IF NOT EXISTS images (
+    file_extension TEXT NOT NUll,
     uploaded BIGINT NOT NULL,
     print_available BOOLEAN NOT NULL,
-    url TEXT NOT NULL, name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    name TEXT NOT NULL,
     privacy ENUM('Listed', 'Unlisted', 'Unspecified') NOT NULL,
     categories TEXT NOT NULL
 );

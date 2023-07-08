@@ -21,8 +21,8 @@ pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
 /// Writes some image metadata to the specified database pool
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
     sqlx::query!(
-        "INSERT INTO images VALUES(?, ?, ?, ?, ?, ?)",
-        metadata.privacy,
+        "INSERT INTO images VALUES(?, ?, ?, ?, ?, ?, ?)",
+        metadata.file_extension,
         metadata
             .uploaded
             .duration_since(UNIX_EPOCH)
@@ -31,6 +31,7 @@ pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(),
         metadata.print_available,
         metadata.url,
         metadata.name,
+        metadata.privacy,
         metadata
             .categories
             .iter()
@@ -64,6 +65,7 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
 pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<ImageMeta, Error> {
     let response = sqlx::query!("SELECT * FROM images WHERE url = ?", url).fetch_one(pool).await?;
     Ok(ImageMeta {
+        file_extension: response.file_extension,
         privacy: crate::models::Privacy::Unspecified,
         uploaded: SystemTime::UNIX_EPOCH + Duration::from_millis(response.uploaded as u64),
         print_available: { if response.print_available == 0 { true } else { false} },
