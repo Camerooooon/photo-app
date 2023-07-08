@@ -14,15 +14,15 @@ pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> 
 ///     - Images
 ///     - Imagegroups
 pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
-    sqlx::query!("CREATE TABLE IF NOT EXISTS images (uploaded BIGINT NOT NULL, print_available BOOLEAN NOT NULL, url TEXT NOT NULL, name TEXT NOT NULL, categories TEXT NOT NULL)").execute(pool).await?;
-    sqlx::query!("CREATE TABLE IF NOT EXISTS imagegroups (created BIGINT NOT NULL, name TEXT NOT NULL, privacy ENUM('Listed', 'Unlisted', 'Unspecified') NOT NULL, url TEXT NOT NULL)").execute(pool).await?;
+    sqlx::migrate!().run(pool).await?;
     Ok(())
 }
 
 /// Writes some image metadata to the specified database pool
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
     sqlx::query!(
-        "INSERT INTO images VALUES(?, ?, ?, ?, ?)",
+        "INSERT INTO images VALUES(?, ?, ?, ?, ?, ?)",
+        metadata.privacy,
         metadata
             .uploaded
             .duration_since(UNIX_EPOCH)
@@ -64,6 +64,7 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
 pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<ImageMeta, Error> {
     let response = sqlx::query!("SELECT * FROM images WHERE url = ?", url).fetch_one(pool).await?;
     Ok(ImageMeta {
+        privacy: crate::models::Privacy::Unspecified,
         uploaded: SystemTime::UNIX_EPOCH + Duration::from_millis(response.uploaded as u64),
         print_available: { if response.print_available == 0 { true } else { false} },
         url,

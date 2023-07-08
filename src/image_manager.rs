@@ -15,10 +15,11 @@ use rocket::data::ToByteUnit;
 use rocket::{Data, State};
 
 /// Route for handling image loading
-#[get("/i/<url>")]
+#[get("/api/image/<url>")]
 pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
 
-    Ok(Json(database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?))
+    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
+    Ok(Json(meta))
 
 }
 
@@ -72,6 +73,7 @@ fn generate_metadata() -> Result<ImageMeta, String> {
         .map(char::from)
         .collect::<String>();
     Ok(ImageMeta {
+        privacy: models::Privacy::Unspecified,
         uploaded: SystemTime::now(),
         print_available: false,
         url: filename,
