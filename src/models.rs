@@ -1,11 +1,12 @@
 use std::time::SystemTime;
 
-use rocket::serde::{Deserialize, Serialize, self};
+use rocket::serde::{Deserialize, Serialize};
 
 /// Metadata souring a certain uploaded image
 #[derive(Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct ImageMeta {
+    pub privacy: Privacy,
     pub uploaded: SystemTime,
     pub print_available: bool,
     pub url: String,
@@ -22,7 +23,8 @@ pub struct ImageGroup {
 }
 
 /// The privacy level of a group of images
-#[derive(strum_macros::Display)]
+#[derive(strum_macros::Display, Serialize, Deserialize, sqlx::Type)]
+#[serde(crate = "rocket::serde")]
 pub enum Privacy {
     /// Image will appear on front page, group will appear on front page
     Listed,
