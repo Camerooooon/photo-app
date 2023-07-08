@@ -1,9 +1,9 @@
-use std::time::UNIX_EPOCH;
+use std::time::{UNIX_EPOCH, SystemTime, Duration};
 
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{ImageMeta, ImageGroup};
+use crate::models::{ImageMeta, ImageGroup, Category};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
@@ -14,12 +14,12 @@ pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> 
 ///     - Images
 ///     - Imagegroups
 pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
-    sqlx::query!("CREATE TABLE IF NOT EXISTS images (uploaded BIGINT, print_available BOOLEAN, url TEXT, name TEXT, categories TEXT)").execute(pool).await?;
-    sqlx::query!("CREATE TABLE IF NOT EXISTS imagegroups (created BIGINT, name TEXT, privacy ENUM('Listed', 'Unlisted', 'Unspecified'), url TEXT)").execute(pool).await?;
+    sqlx::query!("CREATE TABLE IF NOT EXISTS images (uploaded BIGINT NOT NULL, print_available BOOLEAN NOT NULL, url TEXT NOT NULL, name TEXT NOT NULL, categories TEXT NOT NULL)").execute(pool).await?;
+    sqlx::query!("CREATE TABLE IF NOT EXISTS imagegroups (created BIGINT NOT NULL, name TEXT NOT NULL, privacy ENUM('Listed', 'Unlisted', 'Unspecified') NOT NULL, url TEXT NOT NULL)").execute(pool).await?;
     Ok(())
 }
 
-/// Writes some image metadata to the database
+/// Writes some image metadata to the specified database pool
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO images VALUES(?, ?, ?, ?, ?)",
@@ -43,6 +43,7 @@ pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(),
     Ok(())
 }
 
+/// Writes a `ImageGroup` to a specified database pool
 pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO imagegroups VALUES(?, ?, ?, ?)",
@@ -58,4 +59,15 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
     .execute(pool)
     .await?;
     Ok(())
+}
+
+pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<ImageMeta, Error> {
+    let response = sqlx::query!("SELECT * FROM images WHERE url = ?", url).fetch_one(pool).await?;
+    Ok(ImageMeta {
+        uploaded: SystemTime::UNIX_EPOCH + Duration::from_millis(response.uploaded as u64),
+        print_available: { if response.print_available == 0 { true } else { false} },
+        url,
+        name: response.name,
+        categories: response.categories.split(",").into_iter().map(|s| Category::try_from(s).unwrap_or(Category::Unknown)).collect(),
+    })
 }

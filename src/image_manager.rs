@@ -1,17 +1,26 @@
 use std::{fs::File, time::SystemTime};
 
 use models::ImageMeta;
+use rocket::serde::json::Json;
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
+use crate::{models, database};
 use crate::rocket::tokio::io::AsyncReadExt;
-use crate::{database, models};
 
 use image::DynamicImage;
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 use rocket::data::ToByteUnit;
 use rocket::{Data, State};
+
+/// Route for handling image loading
+#[get("/i/<url>")]
+pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
+
+    Ok(Json(database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?))
+
+}
 
 /// Route for handling business logic for uploading of an image
 #[post("/upload", data = "<image>")]
@@ -28,9 +37,7 @@ pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<
 
     save_image(&img, &meta_data)?;
 
-    database::write_image(pool, &meta_data)
-        .await
-        .map_err(|_| "Failed to save image")?;
+    database::write_image(pool, &meta_data).await.map_err(|_| "Failed to save image")?;
 
     Ok("Image uploaded successfully".into())
 }

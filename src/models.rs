@@ -1,6 +1,10 @@
 use std::time::SystemTime;
 
+use rocket::serde::{Deserialize, Serialize, self};
+
 /// Metadata souring a certain uploaded image
+#[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
 pub struct ImageMeta {
     pub uploaded: SystemTime,
     pub print_available: bool,
@@ -29,7 +33,9 @@ pub enum Privacy {
 }
 
 /// Contains a category for certain images, will appear on front end
-#[derive(strum_macros::Display)]
+#[derive(Debug, PartialEq, strum_macros::Display, strum_macros::EnumString)]
+#[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
 pub enum Category {
     Landscape,
     Macro,
@@ -39,4 +45,5 @@ pub enum Category {
     Night,
     Candid,
     Sports,
+    Unknown,
 }

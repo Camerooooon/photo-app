@@ -30,7 +30,7 @@ async fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![index])
-        .mount("/", routes![image_manager::upload_image])
+        .mount("/", routes![image_manager::upload_image, image_manager::get_image])
         .attach(Template::fairing())
         .manage(pool)
 }
