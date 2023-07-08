@@ -1,12 +1,11 @@
-
 use std::time::UNIX_EPOCH;
 
 use sqlx::{Error, Pool};
-use sqlx_mysql::{MySqlPool, MySql};
+use sqlx_mysql::{MySql, MySqlPool};
 
 use crate::models::ImageMeta;
 
-pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error>{
+pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
 }
 
@@ -20,8 +19,26 @@ pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
     Ok(())
 }
 
+/// Writes some image metadata to the database
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
-    sqlx::query!("INSERT INTO images VALUES(?, ?, ?, ?, ?)", metadata.uploaded.duration_since(UNIX_EPOCH).expect("Unexpected duration").as_millis() as u64, metadata.print_available, metadata.url, metadata.name, metadata.categories.iter().map(|e| e.to_string()).collect::<Vec<String>>().join(",")).execute(pool).await?;
+    sqlx::query!(
+        "INSERT INTO images VALUES(?, ?, ?, ?, ?)",
+        metadata
+            .uploaded
+            .duration_since(UNIX_EPOCH)
+            .expect("Unexpected duration")
+            .as_millis() as u64,
+        metadata.print_available,
+        metadata.url,
+        metadata.name,
+        metadata
+            .categories
+            .iter()
+            .map(|e| e.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
+    )
+    .execute(pool)
+    .await?;
     Ok(())
 }
-

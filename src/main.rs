@@ -21,8 +21,12 @@ fn index() -> Template {
 #[tokio::main]
 async fn rocket() -> _ {
     let database_url = "mysql://cameron:pass@127.0.0.1/photoapp";
-    let pool = database::connect_database(database_url).await.expect("Unable to connect to the database, the server could not be started!");
-    database::initalise_database(&pool).await.expect("Failed to initalise database");
+    let pool = database::connect_database(database_url)
+        .await
+        .expect("Unable to connect to the database, the server could not be started!");
+    database::initalise_database(&pool)
+        .await
+        .expect("Failed to initalise database");
 
     rocket::build()
         .mount("/", routes![index])

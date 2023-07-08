@@ -4,8 +4,8 @@ use models::ImageMeta;
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{models, database};
 use crate::rocket::tokio::io::AsyncReadExt;
+use crate::{database, models};
 
 use image::DynamicImage;
 use rand::distributions::Alphanumeric;
@@ -28,7 +28,9 @@ pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<
 
     save_image(&img, &meta_data)?;
 
-    database::write_image(pool, &meta_data).await.map_err(|_| "Failed to save image")?;
+    database::write_image(pool, &meta_data)
+        .await
+        .map_err(|_| "Failed to save image")?;
 
     Ok("Image uploaded successfully".into())
 }
