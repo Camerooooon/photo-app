@@ -81,3 +81,14 @@ fn generate_metadata() -> Result<ImageMeta, String> {
         categories: vec![],
     })
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn generate_metadata_test() {
+        let meta = generate_metadata().unwrap(); 
+        assert_eq!(meta.url.len(), 10);
+    }
+}
