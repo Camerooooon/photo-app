@@ -11,12 +11,14 @@ pub struct ImageMeta {
 
 /// A group of images, can be created by an authenticated user
 pub struct ImageGroup {
+    pub created: SystemTime,
     pub name: String,
     pub privacy: Privacy,
     pub url: String,
 }
 
 /// The privacy level of a group of images
+#[derive(strum_macros::Display)]
 pub enum Privacy {
     /// Image will appear on front page, group will appear on front page
     Listed,
