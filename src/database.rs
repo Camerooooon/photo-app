@@ -3,7 +3,7 @@ use std::time::{UNIX_EPOCH, SystemTime, Duration};
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{ImageMeta, ImageGroup, Category};
+use crate::models::{ImageMeta, ImageGroup, Category, Privacy};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
@@ -60,6 +60,28 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
     .execute(pool)
     .await?;
     Ok(())
+}
+
+/// Get the recent uploaded images from the sql pool
+/// Will not show images marked as `Unlisted`
+pub async fn get_recent_images(pool: &Pool<MySql>) -> Result<Vec<ImageMeta>, Error> {
+    let images = sqlx::query!("SELECT * FROM images ORDER BY uploaded LIMIT 50").fetch_all(pool).await?;
+    let mut to_return: Vec<ImageMeta> = vec![];
+    for image in images {
+        let meta = ImageMeta {
+            file_extension: image.file_extension,
+            privacy: crate::models::Privacy::Unspecified,
+            uploaded: SystemTime::UNIX_EPOCH + Duration::from_millis(image.uploaded as u64),
+            print_available: { if image.print_available == 0 { true } else { false} },
+            url: image.url,
+            name: image.name,
+            categories: image.categories.split(",").into_iter().map(|s| Category::try_from(s).unwrap_or(Category::Unknown)).collect(),
+        };
+        if meta.privacy.ne(&Privacy::Unlisted) {
+            to_return.push(meta);
+        }
+    }
+    Ok(to_return)
 }
 
 pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<ImageMeta, Error> {

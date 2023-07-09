@@ -3,7 +3,7 @@ use std::time::SystemTime;
 use rocket::serde::{Deserialize, Serialize};
 
 /// Metadata souring a certain uploaded image
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct ImageMeta {
     pub file_extension: String,
@@ -24,7 +24,7 @@ pub struct ImageGroup {
 }
 
 /// The privacy level of a group of images
-#[derive(PartialEq, Eq, strum_macros::Display, Serialize, Deserialize, sqlx::Type)]
+#[derive(PartialEq, Eq, strum_macros::Display, Serialize, Deserialize, sqlx::Type, Debug)]
 #[serde(crate = "rocket::serde")]
 pub enum Privacy {
     /// Image will appear on front page, group will appear on front page

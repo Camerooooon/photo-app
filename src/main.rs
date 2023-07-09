@@ -4,18 +4,9 @@ extern crate rocket;
 pub mod database;
 pub mod image_manager;
 pub mod models;
+pub mod interface;
 
-use rocket_dyn_templates::{context, Template};
-
-#[get("/")]
-fn index() -> Template {
-    Template::render(
-        "index",
-        context! {
-            name: "test",
-        },
-    )
-}
+use rocket_dyn_templates::Template;
 
 #[launch]
 #[tokio::main]
@@ -29,8 +20,8 @@ async fn rocket() -> _ {
         .expect("Failed to initalise database");
 
     rocket::build()
-        .mount("/", routes![index])
-        .mount("/", routes![image_manager::upload_image, image_manager::get_image])
+        .mount("/", routes![interface::index])
+        .mount("/", routes![image_manager::upload_image, image_manager::get_image, image_manager::get_image_meta, image_manager::get_thumbnails])
         .attach(Template::fairing())
         .manage(pool)
 }

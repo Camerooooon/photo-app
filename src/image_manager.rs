@@ -1,6 +1,8 @@
+use std::path::PathBuf;
 use std::{fs::File, time::SystemTime};
 
 use models::ImageMeta;
+use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
 use sqlx::Pool;
 use sqlx_mysql::MySql;
@@ -16,9 +18,25 @@ use rocket::{Data, State};
 
 /// Route for handling image loading
 #[get("/api/image/<url>")]
-pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
+pub async fn get_image_meta(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
     let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
     Ok(Json(meta))
+}
+
+/// Route for getting image
+#[get("/i/<url>")]
+pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFile, String> {
+    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
+    let image_path = PathBuf::from(format!("./images/full/{}.{}", meta.url, meta.file_extension));
+    NamedFile::open(image_path).await.map_err(|e| format!("The image could not be read for you: {}", e))
+}
+
+/// Route for getting thumbnail 
+#[get("/thumb/<url>")]
+pub async fn get_thumbnails(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFile, String> {
+    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
+    let image_path = PathBuf::from(format!("./images/thumbnail/{}.jpg", meta.url));
+    NamedFile::open(image_path).await.map_err(|e| format!("The image could not be read for you: {}", e))
 }
 
 /// Route for handling business logic for uploading of an image
