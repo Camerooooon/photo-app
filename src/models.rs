@@ -23,6 +23,24 @@ pub struct ImageGroup {
     pub url: String,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+pub struct User {
+    pub username: String,
+    pub created: SystemTime,
+    pub permissions: Vec<Permission>,
+}
+
+#[derive(Debug, PartialEq, strum_macros::Display, strum_macros::EnumString)]
+#[derive(Deserialize, Serialize)]
+#[serde(crate = "rocket::serde")]
+pub enum Permission {
+    Admin,
+    Upload,
+    Finance,
+    Unknown
+}
+
 /// The privacy level of a group of images
 #[derive(PartialEq, Eq, strum_macros::Display, Serialize, Deserialize, sqlx::Type, Debug)]
 #[serde(crate = "rocket::serde")]

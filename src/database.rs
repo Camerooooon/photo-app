@@ -3,7 +3,7 @@ use std::time::{UNIX_EPOCH, SystemTime, Duration};
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{ImageMeta, ImageGroup, Category, Privacy};
+use crate::models::{ImageMeta, ImageGroup, Category, Privacy, User, Permission};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
@@ -16,6 +16,30 @@ pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> 
 pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
     sqlx::migrate!().run(pool).await?;
     Ok(())
+}
+
+/// Writes a new user to the database
+pub async fn write_user(pool: &Pool<MySql>, user: &User, hashed_password: String) -> Result<(), Error> {
+    sqlx::query!("INSERT INTO users VALUES(?, ?, ?, ?)",
+    user.created.duration_since(UNIX_EPOCH).expect("Unexpected duration").as_millis() as u64,
+    user.username,
+    hashed_password,
+    user.permissions.iter().map(|e| e.to_string()).collect::<Vec<String>>().join(",")).execute(pool).await?;
+    Ok(())
+}
+
+pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, Error> {
+    let response = sqlx::query!("SELECT * FROM users WHERE username = ?", username).fetch_one(pool).await?;
+    Ok(User {
+        created: SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
+        username: response.username,
+        permissions: response.permissions.split(",").into_iter().map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown)).collect(),
+    })
+}
+
+pub async fn verify_hash(pool: &Pool<MySql>, username: &String, password: String) -> Result<bool, Error> {
+    let response = sqlx::query!("SELECT * FROM users WHERE username = ?", username).fetch_one(pool).await?;
+    Ok(bcrypt::verify(password, &response.hashed_password).expect("Unable to compare the hashes"))
 }
 
 /// Writes some image metadata to the specified database pool

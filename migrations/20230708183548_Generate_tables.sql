@@ -16,3 +16,11 @@ CREATE TABLE IF NOT EXISTS imagegroups (
     privacy ENUM('Listed', 'Unlisted', 'Unspecified') NOT NULL,
     url TEXT NOT NULL
 );
+
+-- Initialise table for users
+CREATE TABLE IF NOT EXISTS users (
+    created BIGINT NOT NULL,
+    username TEXT NOT NULL,
+    hashed_password TEXT NOT NULL,
+    permissions TEXT NOT NULL
+);
