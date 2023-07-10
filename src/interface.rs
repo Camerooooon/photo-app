@@ -38,8 +38,9 @@ pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Temp
 #[get("/register?<error>")]
 pub async fn register(error: Option<String>) -> Result<Template, String> {
     let error_message = match error.unwrap_or_default().as_str() {
-        "INVALID_USER_PASS" => "Invalid username or password",
-        "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
+        "DUPLICATE_USERNAME" => "That username is already taken, please try another!",
+        "INVALID_USERNAME" => "Usernames must only contain letters and numbers",
+        "REGISTRATION_FAILED" => "We were unable to add you to our systems, please try again later",
         _ => "",
     };
     Ok(Template::render(

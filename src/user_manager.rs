@@ -1,4 +1,5 @@
 use bcrypt::DEFAULT_COST;
+use regex::Regex;
 use rocket::{
     form::Form,
     http::{Cookie, CookieJar},
@@ -21,12 +22,24 @@ pub struct UserCredentials {
 pub async fn signup(
     credentials: Form<UserCredentials>,
     pool: &State<Pool<MySql>>,
-) -> Result<Redirect, String> {
+) -> Result<Redirect, Redirect> {
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
+    let regex = Regex::new(r"^[a-zA-Z0-9]+$").expect("Invalid regular expression");
+    if !regex.is_match(username.as_str()) {
+        return Err(Redirect::to("/register?error=INVALID_USERNAME"));
+    }
+
+    let user = database::fetch_user(pool, &username)
+        .await.ok();
+
+    if user.is_some() {
+        return Err(Redirect::to("/register?error=DUPLICATE_USERNAME"));
+    }
+
     let hashed_password =
-        bcrypt::hash(password, DEFAULT_COST).expect("Could not hash password?!?!?!");
+        bcrypt::hash(password, DEFAULT_COST).expect("Could not hash password");
 
     let user = User {
         username,
@@ -36,7 +49,7 @@ pub async fn signup(
 
     database::write_user(&pool, &user, hashed_password)
         .await
-        .map_err(|e| format!("Could not save the user to the database: {}", e))?;
+        .map_err(|_| Redirect::to("/register?error=REGISTRATION_FAILED"))?;
 
     Ok(Redirect::to("/login?notice=ACCOUNT_CREATED"))
 }

@@ -17,4 +17,5 @@ sqlx-mysql = "0.7.0"
 strum = "0.25.0"
 strum_macros = "0.25.1"
 bcrypt = "0.15.0"
+regex = "1.9.1"
 
