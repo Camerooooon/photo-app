@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS imagegroups (
 -- Initialise table for users
 CREATE TABLE IF NOT EXISTS users (
     created BIGINT NOT NULL,
-    username TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
     permissions TEXT NOT NULL
 );
