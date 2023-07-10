@@ -23,7 +23,7 @@ async fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![interface::index])
         .mount("/", routes![image_manager::upload_image, image_manager::get_image, image_manager::get_image_meta, image_manager::get_thumbnails])
-        .mount("/", routes![user_manager::signup, user_manager::login])
+        .mount("/", routes![user_manager::signup, user_manager::login, user_manager::status])
         .attach(Template::fairing())
         .manage(pool)
 }
