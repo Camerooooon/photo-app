@@ -16,12 +16,17 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
     ))
 }
 
-#[get("/login")]
-pub async fn login(pool: &State<Pool<MySql>>) -> Result<Template, String> {
+#[get("/login?<error>")]
+pub async fn login(pool: &State<Pool<MySql>>, error: Option<String>) -> Result<Template, String> {
+    let error_message = match error.unwrap_or_default().as_str() {
+        "INVALID_USER_PASS" => "Invalid username or password",
+        "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
+        _ => ""
+    };
     Ok(Template::render(
         "login",
         context! {
-            name: database::get_recent_images(&pool).await.map_err(|_| "Could not fetch recent images from database")?,
+            error: error_message
         },
     ))
 }

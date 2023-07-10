@@ -32,17 +32,24 @@ pub async fn signup(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>
 }
 
 #[post("/api/user/login", data = "<credentials>")]
-pub async fn login(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>>, cookies: &CookieJar<'_>) -> Result<Redirect, String> {
+pub async fn login(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>>, cookies: &CookieJar<'_>) -> Result<Redirect, Redirect> {
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
-    let verified = database::verify_hash(pool, &username, password).await.map_err(|e| format!("Unable to verify your password: {}", e))?;
+    let verified = database::verify_hash(pool, &username, password).await.map_err(|e| match e {
+        sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
+        e => Redirect::to("/login?error=VERIFACTION_FAILED"),
+    })?;
 
     if !verified {
-        return Err("Invalid username or password".to_string());
+        return Ok(Redirect::to("/login?error=INVALID_USER_PASS"));
     }
 
-    let user = database::fetch_user(pool, &username).await.map_err(|e| format!("Unable to fetch your user information: {}", e))?;
+    let user = database::fetch_user(pool, &username).await.map_err(|e| match e {
+        sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
+        e => Redirect::to("/login?error=VERIFACTION_FAILED"),
+    }
+    )?;
     cookies.add_private(Cookie::new("username", user.username));
 
     Ok(Redirect::to("/api/user/status"))
