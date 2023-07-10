@@ -4,7 +4,7 @@ use rocket::{
     form::Form,
     http::{Cookie, CookieJar},
     response::Redirect,
-    State,
+    State, request::{FromRequest, Outcome}, Request,
 };
 use sqlx::Pool;
 use sqlx_mysql::MySql;
@@ -17,6 +17,25 @@ pub struct UserCredentials {
     username: String,
     password: String,
 }
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for User {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> Outcome<User, ()> {
+        let pool = request.guard::<&State<Pool<MySql>>>().await.unwrap();
+        match request.cookies().get_private("username") {
+            Some(username) => {
+                match database::fetch_user(pool, &username.value().to_string()).await {
+                    Ok(user) => {Outcome::Success(user)},
+                    Err(_) => {Outcome::Forward(())}
+                }
+            },
+            None => {Outcome::Forward(())}
+        }
+    }
+}
+
 
 #[post("/api/user/register", data = "<credentials>")]
 pub async fn signup(
@@ -88,10 +107,6 @@ pub async fn login(
 }
 
 #[get("/api/user/status")]
-pub async fn status(cookies: &CookieJar<'_>) -> Result<String, String> {
-    let session_cookie = cookies.get_private("username");
-    match session_cookie {
-        Some(c) => return Ok(format!("Logged into: {}", c)),
-        None => return Ok("not authenticated".to_string()),
-    }
+pub async fn status(user: User) -> Result<String, String> {
+    return Ok(format!("Logged in to: {}", user.username));
 }
