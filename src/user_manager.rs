@@ -54,7 +54,7 @@ pub async fn login(
         .await
         .map_err(|e| match e {
             sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
-            e => Redirect::to("/login?error=VERIFACTION_FAILED"),
+            _ => Redirect::to("/login?error=VERIFACTION_FAILED"),
         })?;
 
     if !verified {
@@ -65,7 +65,7 @@ pub async fn login(
         .await
         .map_err(|e| match e {
             sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
-            e => Redirect::to("/login?error=VERIFACTION_FAILED"),
+            _ => Redirect::to("/login?error=VERIFACTION_FAILED"),
         })?;
     cookies.add_private(Cookie::new("username", user.username));
 

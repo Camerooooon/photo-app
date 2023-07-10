@@ -16,7 +16,7 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
 }
 
 #[get("/login?<error>")]
-pub async fn login(pool: &State<Pool<MySql>>, error: Option<String>) -> Result<Template, String> {
+pub async fn login(error: Option<String>) -> Result<Template, String> {
     let error_message = match error.unwrap_or_default().as_str() {
         "INVALID_USER_PASS" => "Invalid username or password",
         "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
