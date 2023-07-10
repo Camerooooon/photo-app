@@ -1,5 +1,5 @@
 use bcrypt::DEFAULT_COST;
-use rocket::{form::Form, State, http::{CookieJar, Cookie}};
+use rocket::{form::Form, State, http::{CookieJar, Cookie}, response::Redirect};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 use std::time::SystemTime;
@@ -32,20 +32,20 @@ pub async fn signup(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>
 }
 
 #[post("/api/user/login", data = "<credentials>")]
-pub async fn login(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>>, cookies: &CookieJar<'_>) -> Result<String, String> {
+pub async fn login(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>>, cookies: &CookieJar<'_>) -> Result<Redirect, String> {
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
     let verified = database::verify_hash(pool, &username, password).await.map_err(|e| format!("Unable to verify your password: {}", e))?;
 
     if !verified {
-        return Ok("Invalid".to_string());
+        return Err("Invalid username or password".to_string());
     }
 
     let user = database::fetch_user(pool, &username).await.map_err(|e| format!("Unable to fetch your user information: {}", e))?;
     cookies.add_private(Cookie::new("username", user.username));
 
-    Ok("OK".to_string())
+    Ok(Redirect::to("/api/user/status"))
     
 }
 
