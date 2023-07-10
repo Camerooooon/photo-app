@@ -15,8 +15,12 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
     ))
 }
 
-#[get("/login?<error>")]
-pub async fn login(error: Option<String>) -> Result<Template, String> {
+#[get("/login?<error>&<notice>")]
+pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Template, String> {
+    let notice_message = match notice.unwrap_or_default().as_str() {
+        "ACCOUNT_CREATED" => "Your account has been created, please log in with your username and password",
+        _ => "",
+    };
     let error_message = match error.unwrap_or_default().as_str() {
         "INVALID_USER_PASS" => "Invalid username or password",
         "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
@@ -24,6 +28,22 @@ pub async fn login(error: Option<String>) -> Result<Template, String> {
     };
     Ok(Template::render(
         "login",
+        context! {
+            notice: notice_message,
+            error: error_message
+        },
+    ))
+}
+
+#[get("/register?<error>")]
+pub async fn register(error: Option<String>) -> Result<Template, String> {
+    let error_message = match error.unwrap_or_default().as_str() {
+        "INVALID_USER_PASS" => "Invalid username or password",
+        "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
+        _ => "",
+    };
+    Ok(Template::render(
+        "register",
         context! {
             error: error_message
         },

@@ -21,7 +21,7 @@ pub struct UserCredentials {
 pub async fn signup(
     credentials: Form<UserCredentials>,
     pool: &State<Pool<MySql>>,
-) -> Result<String, String> {
+) -> Result<Redirect, String> {
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
@@ -38,7 +38,7 @@ pub async fn signup(
         .await
         .map_err(|e| format!("Could not save the user to the database: {}", e))?;
 
-    Ok("OK".to_string())
+    Ok(Redirect::to("/login?notice=ACCOUNT_CREATED"))
 }
 
 #[post("/api/user/login", data = "<credentials>")]
