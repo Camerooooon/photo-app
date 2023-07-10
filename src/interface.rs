@@ -1,10 +1,9 @@
 use rocket::State;
-use rocket_dyn_templates::{Template, context};
+use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
 use crate::database;
-
 
 #[get("/")]
 pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
@@ -21,7 +20,7 @@ pub async fn login(pool: &State<Pool<MySql>>, error: Option<String>) -> Result<T
     let error_message = match error.unwrap_or_default().as_str() {
         "INVALID_USER_PASS" => "Invalid username or password",
         "VERIFICATION_FAILED" => "We were unable to log you in, please try again later",
-        _ => ""
+        _ => "",
     };
     Ok(Template::render(
         "login",

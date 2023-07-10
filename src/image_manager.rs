@@ -7,8 +7,8 @@ use rocket::serde::json::Json;
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{models, database};
 use crate::rocket::tokio::io::AsyncReadExt;
+use crate::{database, models};
 
 use image::DynamicImage;
 use rand::distributions::Alphanumeric;
@@ -18,25 +18,41 @@ use rocket::{Data, State};
 
 /// Route for handling image loading
 #[get("/api/image/<url>")]
-pub async fn get_image_meta(url: String, pool: &State<Pool<MySql>>) -> Result<Json<ImageMeta>, String> {
-    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
+pub async fn get_image_meta(
+    url: String,
+    pool: &State<Pool<MySql>>,
+) -> Result<Json<ImageMeta>, String> {
+    let meta = database::read_image_metadata(pool, url)
+        .await
+        .map_err(|e| format!("Failed to fetch image: {}", e))?;
     Ok(Json(meta))
 }
 
 /// Route for getting image
 #[get("/i/<url>")]
 pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFile, String> {
-    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
-    let image_path = PathBuf::from(format!("./images/full/{}.{}", meta.url, meta.file_extension));
-    NamedFile::open(image_path).await.map_err(|e| format!("The image could not be read for you: {}", e))
+    let meta = database::read_image_metadata(pool, url)
+        .await
+        .map_err(|e| format!("Failed to fetch image: {}", e))?;
+    let image_path = PathBuf::from(format!(
+        "./images/full/{}.{}",
+        meta.url, meta.file_extension
+    ));
+    NamedFile::open(image_path)
+        .await
+        .map_err(|e| format!("The image could not be read for you: {}", e))
 }
 
-/// Route for getting thumbnail 
+/// Route for getting thumbnail
 #[get("/thumb/<url>")]
 pub async fn get_thumbnails(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFile, String> {
-    let meta = database::read_image_metadata(pool, url).await.map_err(|e| format!("Failed to fetch image: {}", e))?;
+    let meta = database::read_image_metadata(pool, url)
+        .await
+        .map_err(|e| format!("Failed to fetch image: {}", e))?;
     let image_path = PathBuf::from(format!("./images/thumbnail/{}.jpg", meta.url));
-    NamedFile::open(image_path).await.map_err(|e| format!("The image could not be read for you: {}", e))
+    NamedFile::open(image_path)
+        .await
+        .map_err(|e| format!("The image could not be read for you: {}", e))
 }
 
 /// Route for handling business logic for uploading of an image
@@ -53,14 +69,18 @@ pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<
     // Extracts the image format from the image
     let extension = match image::guess_format(&buf) {
         Ok(format) => format.extensions_str()[0],
-        Err(_) => {return Err("Image format was not recognized!".to_string()); }
+        Err(_) => {
+            return Err("Image format was not recognized!".to_string());
+        }
     };
 
     let meta_data = generate_metadata(extension.to_string())?;
 
     save_image(&img, &meta_data)?;
 
-    database::write_image(pool, &meta_data).await.map_err(|e| format!("Failed to save image: {}", e))?;
+    database::write_image(pool, &meta_data)
+        .await
+        .map_err(|e| format!("Failed to save image: {}", e))?;
 
     Ok("Image uploaded successfully".into())
 }
@@ -76,8 +96,11 @@ pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<
 /// specified as the name and the jpg extension
 fn save_image(img: &DynamicImage, meta_data: &ImageMeta) -> Result<(), String> {
     // Save the image to a file
-    let mut file = File::create(format!("./images/full/{}.{}", meta_data.url, meta_data.file_extension))
-        .map_err(|e| format!("Failed to create file: {}", e))?;
+    let mut file = File::create(format!(
+        "./images/full/{}.{}",
+        meta_data.url, meta_data.file_extension
+    ))
+    .map_err(|e| format!("Failed to create file: {}", e))?;
     img.write_to(&mut file, image::ImageOutputFormat::Jpeg(100))
         .map_err(|e| format!("Failed to write image data: {}", e))?;
 
@@ -117,7 +140,7 @@ mod test {
 
     #[test]
     fn generate_metadata_test() {
-        let meta = generate_metadata("jpg".to_string()).unwrap(); 
+        let meta = generate_metadata("jpg".to_string()).unwrap();
         assert_eq!(meta.url.len(), 10);
         assert_eq!(meta.file_extension, "jpg");
     }

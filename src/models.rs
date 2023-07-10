@@ -31,14 +31,15 @@ pub struct User {
     pub permissions: Vec<Permission>,
 }
 
-#[derive(Debug, PartialEq, strum_macros::Display, strum_macros::EnumString)]
-#[derive(Deserialize, Serialize)]
+#[derive(
+    Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize,
+)]
 #[serde(crate = "rocket::serde")]
 pub enum Permission {
     Admin,
     Upload,
     Finance,
-    Unknown
+    Unknown,
 }
 
 /// The privacy level of a group of images
@@ -54,8 +55,9 @@ pub enum Privacy {
 }
 
 /// Contains a category for certain images, will appear on front end
-#[derive(Debug, PartialEq, strum_macros::Display, strum_macros::EnumString)]
-#[derive(Deserialize, Serialize)]
+#[derive(
+    Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize,
+)]
 #[serde(crate = "rocket::serde")]
 pub enum Category {
     Landscape,

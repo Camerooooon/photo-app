@@ -1,11 +1,11 @@
 #[macro_use]
 extern crate rocket;
 
-pub mod user_manager;
 pub mod database;
 pub mod image_manager;
-pub mod models;
 pub mod interface;
+pub mod models;
+pub mod user_manager;
 
 use rocket_dyn_templates::Template;
 
@@ -22,8 +22,23 @@ async fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![interface::index, interface::login])
-        .mount("/", routes![image_manager::upload_image, image_manager::get_image, image_manager::get_image_meta, image_manager::get_thumbnails])
-        .mount("/", routes![user_manager::signup, user_manager::login, user_manager::status])
+        .mount(
+            "/",
+            routes![
+                image_manager::upload_image,
+                image_manager::get_image,
+                image_manager::get_image_meta,
+                image_manager::get_thumbnails
+            ],
+        )
+        .mount(
+            "/",
+            routes![
+                user_manager::signup,
+                user_manager::login,
+                user_manager::status
+            ],
+        )
         .attach(Template::fairing())
         .manage(pool)
 }
