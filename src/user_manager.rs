@@ -49,7 +49,7 @@ pub async fn login(credentials: Form<UserCredentials>, pool: &State<Pool<MySql>>
     
 }
 
-#[post("/api/user/status")]
+#[get("/api/user/status")]
 pub async fn status(cookies: &CookieJar<'_>) -> Result<String, String> {
     let session_cookie = cookies.get_private("username");
     match session_cookie {

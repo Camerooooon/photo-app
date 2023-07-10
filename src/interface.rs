@@ -15,3 +15,13 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
         },
     ))
 }
+
+#[get("/login")]
+pub async fn login(pool: &State<Pool<MySql>>) -> Result<Template, String> {
+    Ok(Template::render(
+        "login",
+        context! {
+            name: database::get_recent_images(&pool).await.map_err(|_| "Could not fetch recent images from database")?,
+        },
+    ))
+}
