@@ -21,7 +21,15 @@ async fn rocket() -> _ {
         .expect("Failed to initalise database");
 
     rocket::build()
-        .mount("/", routes![interface::index, interface::login, interface::register, interface::dashboard])
+        .mount(
+            "/",
+            routes![
+                interface::index,
+                interface::login,
+                interface::register,
+                interface::dashboard
+            ],
+        )
         .mount(
             "/",
             routes![

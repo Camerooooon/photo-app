@@ -3,8 +3,9 @@ use regex::Regex;
 use rocket::{
     form::Form,
     http::{Cookie, CookieJar},
+    request::{FromRequest, Outcome},
     response::Redirect,
-    State, request::{FromRequest, Outcome}, Request,
+    Request, State,
 };
 use sqlx::Pool;
 use sqlx_mysql::MySql;
@@ -19,7 +20,7 @@ pub struct UserCredentials {
 }
 
 pub struct AuthenticatedUser {
-    user: User
+    user: User,
 }
 
 #[rocket::async_trait]
@@ -31,11 +32,11 @@ impl<'r> FromRequest<'r> for User {
         match request.cookies().get_private("username") {
             Some(username) => {
                 match database::fetch_user(pool, &username.value().to_string()).await {
-                    Ok(user) => {Outcome::Success(user)},
-                    Err(_) => {Outcome::Forward(())}
+                    Ok(user) => Outcome::Success(user),
+                    Err(_) => Outcome::Forward(()),
                 }
-            },
-            None => {Outcome::Forward(())}
+            }
+            None => Outcome::Forward(()),
         }
     }
 }
@@ -49,15 +50,20 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
         match request.cookies().get_private("username") {
             Some(username) => {
                 match database::fetch_user(pool, &username.value().to_string()).await {
-                    Ok(user) => {if user.permissions.is_empty() {Outcome::Forward(())} else { Outcome::Success(AuthenticatedUser { user })}},
-                    Err(_) => {Outcome::Forward(())}
+                    Ok(user) => {
+                        if user.permissions.is_empty() {
+                            Outcome::Forward(())
+                        } else {
+                            Outcome::Success(AuthenticatedUser { user })
+                        }
+                    }
+                    Err(_) => Outcome::Forward(()),
                 }
-            },
-            None => {Outcome::Forward(())}
+            }
+            None => Outcome::Forward(()),
         }
     }
 }
-
 
 #[post("/api/user/register", data = "<credentials>")]
 pub async fn signup(
@@ -74,15 +80,13 @@ pub async fn signup(
     }
 
     // Check that the username is not already taken
-    let user = database::fetch_user(pool, &username)
-        .await.ok();
+    let user = database::fetch_user(pool, &username).await.ok();
 
     if user.is_some() {
         return Err(Redirect::to("/register?error=DUPLICATE_USERNAME"));
     }
 
-    let hashed_password =
-        bcrypt::hash(password, DEFAULT_COST).expect("Could not hash password");
+    let hashed_password = bcrypt::hash(password, DEFAULT_COST).expect("Could not hash password");
 
     let user = User {
         username,

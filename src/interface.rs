@@ -18,7 +18,9 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
 #[get("/login?<error>&<notice>")]
 pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Template, String> {
     let notice_message = match notice.unwrap_or_default().as_str() {
-        "ACCOUNT_CREATED" => "Your account has been created, please log in with your username and password",
+        "ACCOUNT_CREATED" => {
+            "Your account has been created, please log in with your username and password"
+        }
         _ => "",
     };
     let error_message = match error.unwrap_or_default().as_str() {
@@ -52,7 +54,7 @@ pub async fn register(error: Option<String>) -> Result<Template, String> {
 }
 
 #[get("/dashboard")]
-pub async fn dashboard(user: User) -> Result <Template, String> {
+pub async fn dashboard(user: User) -> Result<Template, String> {
     let mut notice_message = "";
     if user.permissions.is_empty() {
         notice_message = "You currently do not have permission to access the dashboard, please wait for your account to be approved!"

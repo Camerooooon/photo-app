@@ -34,10 +34,7 @@ pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFi
     let meta = database::read_image_metadata(pool, url)
         .await
         .map_err(|e| format!("Failed to fetch image: {}", e))?;
-    let image_path = PathBuf::from(format!(
-        "./images/full/{}.{}",
-        meta.id, meta.file_extension
-    ));
+    let image_path = PathBuf::from(format!("./images/full/{}.{}", meta.id, meta.file_extension));
     NamedFile::open(image_path)
         .await
         .map_err(|e| format!("The image could not be read for you: {}", e))
