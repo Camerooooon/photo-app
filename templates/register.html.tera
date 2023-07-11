@@ -35,7 +35,7 @@ body > .grid {
                     {% else %}
                     <div class="ui attached message">
                         <div class="header">
-                            Welcome to Cameron Media
+                            5 Dog Farm Photography
                         </div>
                         <p>You are creating a new account</p>
                     </div>

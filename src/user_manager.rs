@@ -79,6 +79,10 @@ pub async fn signup(
         return Err(Redirect::to("/register?error=INVALID_USERNAME"));
     }
 
+    if username.len() < 3 {
+        return Err(Redirect::to("/register?error=INVALID_USERNAME"));
+    }
+
     // Check that the username is not already taken
     let user = database::fetch_user(pool, &username).await.ok();
 
