@@ -18,6 +18,10 @@ pub struct UserCredentials {
     password: String,
 }
 
+pub struct AuthenticatedUser {
+    user: User
+}
+
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for User {
     type Error = ();
@@ -28,6 +32,24 @@ impl<'r> FromRequest<'r> for User {
             Some(username) => {
                 match database::fetch_user(pool, &username.value().to_string()).await {
                     Ok(user) => {Outcome::Success(user)},
+                    Err(_) => {Outcome::Forward(())}
+                }
+            },
+            None => {Outcome::Forward(())}
+        }
+    }
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for AuthenticatedUser {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> Outcome<AuthenticatedUser, ()> {
+        let pool = request.guard::<&State<Pool<MySql>>>().await.unwrap();
+        match request.cookies().get_private("username") {
+            Some(username) => {
+                match database::fetch_user(pool, &username.value().to_string()).await {
+                    Ok(user) => {if user.permissions.is_empty() {Outcome::Forward(())} else { Outcome::Success(AuthenticatedUser { user })}},
                     Err(_) => {Outcome::Forward(())}
                 }
             },
@@ -103,10 +125,10 @@ pub async fn login(
         })?;
     cookies.add_private(Cookie::new("username", user.username));
 
-    Ok(Redirect::to("/api/user/status"))
+    Ok(Redirect::to("/dashboard"))
 }
 
 #[get("/api/user/status")]
-pub async fn status(user: User) -> Result<String, String> {
-    return Ok(format!("Logged in to: {}", user.username));
+pub async fn status(user: AuthenticatedUser) -> Result<String, String> {
+    return Ok(format!("Logged in to: {}", user.user.username));
 }
