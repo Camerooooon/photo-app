@@ -139,6 +139,7 @@ pub async fn get_recent_images(pool: &Pool<MySql>) -> Result<Vec<ImageMeta>, Err
             categories: image
                 .categories
                 .split(",")
+                .filter(|s| !s.is_empty())
                 .into_iter()
                 .map(|s| Category::try_from(s).unwrap_or(Category::Unknown))
                 .collect(),
@@ -170,6 +171,7 @@ pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<Imag
         categories: response
             .categories
             .split(",")
+            .filter(|s| !s.is_empty())
             .into_iter()
             .map(|s| Category::try_from(s).unwrap_or(Category::Unknown))
             .collect(),
