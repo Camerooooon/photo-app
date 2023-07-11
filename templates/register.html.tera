@@ -28,15 +28,6 @@ body > .grid {
             <div class="ui middle aligned center aligned grid">
                 <div class="column">
 
-                    {% if error %}
-                    <div class="ui error message transition icon">
-                        <i class="exclamation triangle icon"></i>
-                        <div class="header">
-                            There were some errors with your submission
-                        </div>
-                        {{ error }}
-                    </div>
-                    {% endif %}
                     <div class="ui attached message">
                         <div class="header">
                             Welcome to Cameron Media
@@ -74,6 +65,12 @@ body > .grid {
                     <div class="ui bottom attached message">
                         Already have an account? <a href="/login">Login</a>
                     </div>
+                    {% if error %}
+                    <div class="ui error message transition icon">
+                        <i class="exclamation triangle icon"></i>
+                        {{ error }}
+                    </div>
+                    {% endif %}
         </body>
 </html>
 

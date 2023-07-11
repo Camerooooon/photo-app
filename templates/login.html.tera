@@ -28,15 +28,7 @@ body > .grid {
     <body data-gr-c-s-loaded="true">
         <div class="ui middle aligned center aligned grid">
             <div class="column">
-                {% if error %}
-                <div class="ui error message transition icon">
-                    <i class="exclamation triangle icon"></i>
-                    <div class="header">
-                        There were some errors with your submission
-                    </div>
-                    {{ error }}
-                </div>
-                {% endif %}
+
                 <div class="ui attached message">
                     <div class="header">
                         5 Dog Farm Photography
@@ -66,6 +58,22 @@ body > .grid {
                 <div class="ui bottom attached message">
                     Need an account? <a href="/register">Register</a>
                 </div>
+
+                {% if error %}
+                <div class="ui error message transition icon">
+                    <i class="exclamation triangle icon"></i>
+                    <div class="header">
+                        There were some errors with your submission
+                    </div>
+                    {{ error }}
+                </div>
+                {% endif %}
+                {% if notice %}
+                <div class="ui success message transition icon">
+                    <i class="check icon small"></i>
+                    {{ notice }}
+                </div>
+                {% endif %}
             </div>
         </div>
     </body>

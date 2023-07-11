@@ -3,16 +3,28 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/semantic/dist/icon.min.css">
+        <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+        <script src="semantic/dist/semantic.min.js"></script>
         <title>Dashboard</title>
     </head>
     <body>
-        <p style="color: red;">
-          {% if notice %}
-            {{ notice }}
-          {% endif %}
-        </p>
-        <div class="container">
-            You are signed into: {{ username }} with permissions {{ permissions }}
+        <div class="ui raised very padded text container" style="margin: 3em">
+            {% if notice%}
+            <div class="ui error message transition icon">
+                <i class="exclamation triangle icon"></i>
+                {{ notice }}
+            </div>
+            {% endif %}
+            <h2 class="ui header">Welcome back {{ username }}!</h2>
+            <p>Test</p>
+            <p></p>
+            <div class="ui link cards">
+            </div>
         </div>
     </body>
 </html>
