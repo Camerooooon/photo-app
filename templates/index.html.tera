@@ -12,7 +12,21 @@
         <title>Home</title>
     </head>
     <body>
-        <div class="ui raised very padded text container segment" style="margin: 1em">
+        <div class="ui fixed menu">
+            <div class="ui container">
+                <a href="#" class="header item">
+                    5 Dog Farm Photography
+                </a>
+                <a href="#" class="item">About Us</a>
+                <a href="#" class="item">Hire Us</a>
+                <div class="right menu">
+                    <a href="login" class="ui item">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="ui raised very padded text container" style="margin: 1em">
             <h2 class="ui header">Hello World</h2>
             <p>Test</p>
             <p></p>
