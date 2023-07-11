@@ -1,4 +1,5 @@
-use rocket::http::ContentType;
+use rocket::Request;
+use rocket::http::{ContentType, CookieJar};
 use rocket::{State, fs::NamedFile};
 use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
@@ -49,7 +50,7 @@ pub async fn semantic_icon_woff2() -> (ContentType, NamedFile) {
 }
 
 #[get("/login?<error>&<notice>")]
-pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Template, String> {
+pub async fn login(cookies: &CookieJar<'_>, notice: Option<String>, error: Option<String>) -> Result<Template, String> {
     let notice_message = match notice.unwrap_or_default().as_str() {
         "ACCOUNT_CREATED" => {
             "Your account has been created, please log in with your username and password"
@@ -65,13 +66,14 @@ pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Temp
         "login",
         context! {
             notice: notice_message,
-            error: error_message
+            error: error_message,
+            signed_in: cookies.get_private("username").is_some(),
         },
     ))
 }
 
 #[get("/register?<error>")]
-pub async fn register(error: Option<String>) -> Result<Template, String> {
+pub async fn register(cookies: &CookieJar<'_>, error: Option<String>) -> Result<Template, String> {
     let error_message = match error.unwrap_or_default().as_str() {
         "DUPLICATE_USERNAME" => "That username is already taken, please try another!",
         "INVALID_USERNAME" => "Usernames must only contain letters and numbers",
@@ -81,7 +83,8 @@ pub async fn register(error: Option<String>) -> Result<Template, String> {
     Ok(Template::render(
         "register",
         context! {
-            error: error_message
+            error: error_message,
+            signed_in: cookies.get_private("username").is_some(),
         },
     ))
 }

@@ -29,6 +29,11 @@ body > .grid {
         <div class="ui middle aligned center aligned grid">
             <div class="column">
 
+                {% if signed_in %}
+                    You are already signed in! 
+                    <br>
+                    You can <a href="/dashboard">return to your dashboard</a> if you would like
+                {% else %}
                 <div class="ui attached message">
                     <div class="header">
                         5 Dog Farm Photography
@@ -73,6 +78,7 @@ body > .grid {
                     <i class="check icon small"></i>
                     {{ notice }}
                 </div>
+                {% endif %}
                 {% endif %}
             </div>
         </div>
