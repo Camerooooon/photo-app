@@ -73,14 +73,18 @@ pub async fn signup(
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
+    if username.len() < 3 {
+        return Err(Redirect::to("/register?error=SHORT_USERNAME"));
+    }
+
     // Make sure that the username is alphanumerical
     let regex = Regex::new(r"^[a-zA-Z0-9]+$").expect("Invalid regular expression");
     if !regex.is_match(username.as_str()) {
         return Err(Redirect::to("/register?error=INVALID_USERNAME"));
     }
 
-    if username.len() < 3 {
-        return Err(Redirect::to("/register?error=INVALID_USERNAME"));
+    if password.len() < 3 {
+        return Err(Redirect::to("/register?error=SHORT_PASSWORD"));
     }
 
     // Check that the username is not already taken

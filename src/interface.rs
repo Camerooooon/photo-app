@@ -76,7 +76,9 @@ pub async fn login(cookies: &CookieJar<'_>, notice: Option<String>, error: Optio
 pub async fn register(cookies: &CookieJar<'_>, error: Option<String>) -> Result<Template, String> {
     let error_message = match error.unwrap_or_default().as_str() {
         "DUPLICATE_USERNAME" => "That username is already taken, please try another!",
-        "INVALID_USERNAME" => "That username is invalid, usernames must only contain letters and numbers and must be at least 3 characters long",
+        "INVALID_USERNAME" => "Username is invalid, usernames must only contain letters and numbers",
+        "SHORT_USERNAME" => "That username is too short. Usernames must be at least 3 characters long",
+        "SHORT_PASSWORD" => "Please enter a longer password",
         "REGISTRATION_FAILED" => "We were unable to add you to our systems, please try again later",
         _ => "",
     };
