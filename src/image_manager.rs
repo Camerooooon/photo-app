@@ -40,6 +40,7 @@ pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFi
         .map_err(|e| format!("The image could not be read for you: {}", e))
 }
 
+
 /// Route for getting thumbnail
 #[get("/thumb/<url>")]
 pub async fn get_thumbnails(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFile, String> {

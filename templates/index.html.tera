@@ -3,14 +3,25 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+        <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+        <script src="semantic/dist/semantic.min.js"></script>
         <title>Home</title>
     </head>
     <body>
+        <div class="ui raised very padded text container segment">
+            <h2 class="ui header">Hello World</h2>
+            <p>Test</p>
+            <p></p>
+        </div>
         <div class="container">
             <div class="row">
             {% for item in name %}
                 <div class="col-md-4">
-                    <img src="./thumb/{{item.url}}" class="img-fluid">
+                    <img src="./thumb/{{item.id}}" class="img-fluid">
                 </div>
                 {% if loop.index % 3 == 0%}
                     </div>

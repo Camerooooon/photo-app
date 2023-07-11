@@ -27,7 +27,9 @@ async fn rocket() -> _ {
                 interface::index,
                 interface::login,
                 interface::register,
-                interface::dashboard
+                interface::dashboard,
+                interface::semantic_js,
+                interface::semantic_css,
             ],
         )
         .mount(

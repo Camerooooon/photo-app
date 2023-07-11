@@ -1,4 +1,7 @@
-use rocket::State;
+use rocket::Response;
+use rocket::http::ContentType;
+use rocket::{State, fs::NamedFile};
+use rocket::response::Responder;
 use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
@@ -13,6 +16,22 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
             name: database::get_recent_images(&pool).await.map_err(|_| "Could not fetch recent images from database")?,
         },
     ))
+}
+
+#[get("/semantic/dist/semantic.min.js")]
+pub async fn semantic_js() -> (ContentType, NamedFile) {
+    let content_type = ContentType::new("application", "javascript");
+    let file = NamedFile::open("./static/semantic.min.js").await.unwrap();
+
+    (content_type, file)
+}
+
+#[get("/semantic/dist/semantic.min.css")]
+pub async fn semantic_css() -> (ContentType, NamedFile) {
+    let content_type = ContentType::new("text", "css");
+    let file = NamedFile::open("./static/semantic.min.css").await.unwrap();
+
+    (content_type, file)
 }
 
 #[get("/login?<error>&<notice>")]
