@@ -1,7 +1,5 @@
-use rocket::Response;
 use rocket::http::ContentType;
 use rocket::{State, fs::NamedFile};
-use rocket::response::Responder;
 use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
