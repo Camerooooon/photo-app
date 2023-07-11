@@ -32,6 +32,22 @@ pub async fn semantic_css() -> (ContentType, NamedFile) {
     (content_type, file)
 }
 
+#[get("/semantic/dist/icon.min.css")]
+pub async fn semantic_icon_css() -> (ContentType, NamedFile) {
+    let content_type = ContentType::new("text", "css");
+    let file = NamedFile::open("./static/icon.min.css").await.unwrap();
+
+    (content_type, file)
+}
+
+#[get("/semantic/themes/default/assets/fonts/icons.woff2")]
+pub async fn semantic_icon_woff2() -> (ContentType, NamedFile) {
+    let content_type = ContentType::new("text", "css");
+    let file = NamedFile::open("./static/icons.woff2").await.unwrap();
+
+    (content_type, file)
+}
+
 #[get("/login?<error>&<notice>")]
 pub async fn login(notice: Option<String>, error: Option<String>) -> Result<Template, String> {
     let notice_message = match notice.unwrap_or_default().as_str() {

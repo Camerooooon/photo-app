@@ -1,29 +1,72 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Login Page</title>
-</head>
-<body>
-  <h2>Login</h2>
-  <form action="/api/user/login" method="POST">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="semantic/dist/icon.min.css">
+        <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+        <script src="semantic/dist/semantic.min.js"></script>
+        <title>Home</title>
+        <style type="text/css">
+body > .grid {
+    height: 100%;
+}
+  .image {
+      margin-top: -100px;
+  }
+  .column {
+      max-width: 450px;
+  }
+        </style>
+    </head>
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
+    </head>
+    <body data-gr-c-s-loaded="true">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+                {% if error %}
+                <div class="ui error message transition icon">
+                    <i class="exclamation triangle icon"></i>
+                    <div class="header">
+                        There were some errors with your submission
+                    </div>
+                    {{ error }}
+                </div>
+                {% endif %}
+                <div class="ui attached message">
+                    <div class="header">
+                        5 Dog Farm Photography
+                    </div>
+                    <p>Please sign in to continue</p>
+                </div>
+                <div class="ui form attached fluid segment">
+                    <form action="/api/user/login" method="POST">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            <input type="text" name="username" placeholder="Account Name" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAPhJREFUOBHlU70KgzAQPlMhEvoQTg6OPoOjT+JWOnRqkUKHgqWP4OQbOPokTk6OTkVULNSLVc62oJmbIdzd95NcuGjX2/3YVI/Ts+t0WLE2ut5xsQ0O+90F6UxFjAI8qNcEGONia08e6MNONYwCS7EQAizLmtGUDEzTBNd1fxsYhjEBnHPQNG3KKTYV34F8ec/zwHEciOMYyrIE3/ehKAqIoggo9inGXKmFXwbyBkmSQJqmUNe15IRhCG3byphitm1/eUzDM4qR0TTNjEixGdAnSi3keS5vSk2UDKqqgizLqB4YzvassiKhGtZ/jDMtLOnHz7TE+yf8BaDZXA509yeBAAAAAElFTkSuQmCC&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;" onkeypress="return keyPress(event, this)" >
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            <input type="password" name="password" placeholder="Account Password" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAPhJREFUOBHlU70KgzAQPlMhEvoQTg6OPoOjT+JWOnRqkUKHgqWP4OQbOPokTk6OTkVULNSLVc62oJmbIdzd95NcuGjX2/3YVI/Ts+t0WLE2ut5xsQ0O+90F6UxFjAI8qNcEGONia08e6MNONYwCS7EQAizLmtGUDEzTBNd1fxsYhjEBnHPQNG3KKTYV34F8ec/zwHEciOMYyrIE3/ehKAqIoggo9inGXKmFXwbyBkmSQJqmUNe15IRhCG3byphitm1/eUzDM4qR0TTNjEixGdAnSi3keS5vSk2UDKqqgizLqB4YzvassiKhGtZ/jDMtLOnHz7TE+yf8BaDZXA509yeBAAAAAElFTkSuQmCC&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: pointer;" onkeypress="return keyPress(event, this)" >
+                        </div>
+                    </div>
+                    <button type="submit" class="ui medium fluid button" name="login-submit" onclick="submit.call(this)">
+                        Login
+                    </button>
+                </form>
+                </div>
 
-    <input type="submit" value="Login">
-  </form>
-  <p style="color: red;">
-    {% if error %}
-      {{ error }}
-    {% endif %}
-  </p>
-  <p style="color: green;">
-    {% if notice %}
-      {{ notice }}
-    {% endif %}
-  </p>
-</body>
+                <div class="ui bottom attached message">
+                    Need an account? <a href="./register">Register</a>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
-

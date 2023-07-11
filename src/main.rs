@@ -30,6 +30,8 @@ async fn rocket() -> _ {
                 interface::dashboard,
                 interface::semantic_js,
                 interface::semantic_css,
+                interface::semantic_icon_css,
+                interface::semantic_icon_woff2,
             ],
         )
         .mount(
