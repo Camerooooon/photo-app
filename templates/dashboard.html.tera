@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Dashboard</title>
+    </head>
+    <body>
+        <p style="color: red;">
+          {% if notice %}
+            {{ notice }}
+          {% endif %}
+        </p>
+        <div class="container">
+            You are signed into: {{ username }} with permissions {{ permissions }}
+        </div>
+    </body>
+</html>

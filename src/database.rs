@@ -53,6 +53,7 @@ pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, E
         permissions: response
             .permissions
             .split(",")
+            .filter(|s| !s.is_empty())
             .into_iter()
             .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
             .collect(),

@@ -3,7 +3,7 @@ use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::database;
+use crate::{database, models::User};
 
 #[get("/")]
 pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
@@ -47,6 +47,22 @@ pub async fn register(error: Option<String>) -> Result<Template, String> {
         "register",
         context! {
             error: error_message
+        },
+    ))
+}
+
+#[get("/dashboard")]
+pub async fn dashboard(user: User) -> Result <Template, String> {
+    let mut notice_message = "";
+    if user.permissions.is_empty() {
+        notice_message = "You currently do not have permission to access the dashboard, please wait for your account to be approved!"
+    }
+    Ok(Template::render(
+        "dashboard",
+        context! {
+            notice: notice_message,
+            permissions: user.permissions,
+            username: user.username
         },
     ))
 }
