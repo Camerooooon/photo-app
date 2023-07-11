@@ -36,7 +36,7 @@ pub async fn get_image(url: String, pool: &State<Pool<MySql>>) -> Result<NamedFi
         .map_err(|e| format!("Failed to fetch image: {}", e))?;
     let image_path = PathBuf::from(format!(
         "./images/full/{}.{}",
-        meta.url, meta.file_extension
+        meta.id, meta.file_extension
     ));
     NamedFile::open(image_path)
         .await
@@ -49,7 +49,7 @@ pub async fn get_thumbnails(url: String, pool: &State<Pool<MySql>>) -> Result<Na
     let meta = database::read_image_metadata(pool, url)
         .await
         .map_err(|e| format!("Failed to fetch image: {}", e))?;
-    let image_path = PathBuf::from(format!("./images/thumbnail/{}.jpg", meta.url));
+    let image_path = PathBuf::from(format!("./images/thumbnail/{}.jpg", meta.id));
     NamedFile::open(image_path)
         .await
         .map_err(|e| format!("The image could not be read for you: {}", e))
@@ -98,7 +98,7 @@ fn save_image(img: &DynamicImage, meta_data: &ImageMeta) -> Result<(), String> {
     // Save the image to a file
     let mut file = File::create(format!(
         "./images/full/{}.{}",
-        meta_data.url, meta_data.file_extension
+        meta_data.id, meta_data.file_extension
     ))
     .map_err(|e| format!("Failed to create file: {}", e))?;
     img.write_to(&mut file, image::ImageOutputFormat::Jpeg(100))
@@ -106,7 +106,7 @@ fn save_image(img: &DynamicImage, meta_data: &ImageMeta) -> Result<(), String> {
 
     let thumbnail = img.thumbnail(500, 500);
 
-    let mut file = File::create(format!("./images/thumbnail/{}.jpg", meta_data.url))
+    let mut file = File::create(format!("./images/thumbnail/{}.jpg", meta_data.id))
         .map_err(|e| format!("Failed to create file: {}", e))?;
     thumbnail
         .write_to(&mut file, image::ImageOutputFormat::Jpeg(100))
@@ -128,7 +128,7 @@ fn generate_metadata(file_extension: String) -> Result<ImageMeta, String> {
         privacy: models::Privacy::Unspecified,
         uploaded: SystemTime::now(),
         print_available: false,
-        url: filename,
+        id: filename,
         name: "Unnamed".to_string(),
         categories: vec![],
     })
@@ -141,7 +141,7 @@ mod test {
     #[test]
     fn generate_metadata_test() {
         let meta = generate_metadata("jpg".to_string()).unwrap();
-        assert_eq!(meta.url.len(), 10);
+        assert_eq!(meta.id.len(), 10);
         assert_eq!(meta.file_extension, "jpg");
     }
 }

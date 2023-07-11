@@ -10,7 +10,7 @@ pub struct ImageMeta {
     pub privacy: Privacy,
     pub uploaded: SystemTime,
     pub print_available: bool,
-    pub url: String,
+    pub id: String,
     pub name: String,
     pub categories: Vec<Category>,
 }
@@ -20,7 +20,7 @@ pub struct ImageGroup {
     pub created: SystemTime,
     pub name: String,
     pub privacy: Privacy,
-    pub url: String,
+    pub id: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

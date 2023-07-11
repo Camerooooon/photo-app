@@ -82,7 +82,7 @@ pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(),
             .expect("Unexpected duration")
             .as_millis() as u64,
         metadata.print_available,
-        metadata.url,
+        metadata.id,
         metadata.name,
         metadata.privacy,
         metadata
@@ -108,7 +108,7 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
             .as_millis() as u64,
         group.name,
         group.privacy.to_string(),
-        group.url
+        group.id
     )
     .execute(pool)
     .await?;
@@ -134,7 +134,7 @@ pub async fn get_recent_images(pool: &Pool<MySql>) -> Result<Vec<ImageMeta>, Err
                     false
                 }
             },
-            url: image.url,
+            id: image.url,
             name: image.name,
             categories: image
                 .categories
@@ -166,7 +166,7 @@ pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<Imag
                 false
             }
         },
-        url,
+        id: url,
         name: response.name,
         categories: response
             .categories
