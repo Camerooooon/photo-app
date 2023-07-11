@@ -12,24 +12,19 @@
         <title>Home</title>
     </head>
     <body>
-        <div class="ui raised very padded text container segment">
+        <div class="ui raised very padded text container segment" style="margin: 1em">
             <h2 class="ui header">Hello World</h2>
             <p>Test</p>
             <p></p>
-        </div>
-        <div class="container">
-            <div class="row">
+            <div class="ui link cards">
             {% for item in name %}
-                <div class="col-md-4">
-                    <img src="./thumb/{{item.id}}" class="img-fluid">
-                </div>
-                {% if loop.index % 3 == 0%}
+            <div class="card" onclick=" window.open('./i/{{item.id}}','_blank')">
+                    <div class="image">
+                        <img src="./thumb/{{item.id}}">
                     </div>
-                    <div class="row">
-                {% endif %}
+                </div>
             {% endfor %}
             </div>
         </div>
-        <h1>Hello, world!</h1>
     </body>
 </html>

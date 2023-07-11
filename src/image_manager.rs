@@ -58,7 +58,7 @@ pub async fn get_thumbnails(url: String, pool: &State<Pool<MySql>>) -> Result<Na
 pub async fn upload_image(image: Data<'_>, pool: &State<Pool<MySql>>) -> Result<String, String> {
     // Read the image data from the request
     let mut buf = Vec::new();
-    if let Err(e) = image.open(2.megabytes()).read_to_end(&mut buf).await {
+    if let Err(e) = image.open(50.megabytes()).read_to_end(&mut buf).await {
         return Err(format!("Failed to read image data: {}", e));
     }
 
