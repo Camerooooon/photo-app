@@ -164,7 +164,6 @@ pub async fn delete(
     pool: &State<Pool<MySql>>,
     cookies: &CookieJar<'_>,
 ) -> Result<Redirect, Redirect>{
-    println!("user: {}, pass: {}", &user.username, &password.to_string());
     let verified = database::verify_hash(pool, &user.username, password.clone())
         .await
         .map_err(|e| match e {
