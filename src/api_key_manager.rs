@@ -36,7 +36,7 @@ fn generate_api_key(owner: String, permissions: Vec<Permission>) -> Result<ApiKe
     // Generate a random name for the image file
     let secret: String = thread_rng()
         .sample_iter(&Alphanumeric)
-        .take(15)
+        .take(25)
         .map(char::from)
         .collect::<String>();
     Ok(ApiKey {
