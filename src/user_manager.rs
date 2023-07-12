@@ -2,7 +2,7 @@ use bcrypt::DEFAULT_COST;
 use regex::Regex;
 use rocket::{
     form::Form,
-    http::{Cookie, CookieJar},
+    http::{Cookie, CookieJar, RawStr},
     request::{FromRequest, Outcome},
     response::Redirect,
     Request, State,
@@ -138,6 +138,34 @@ pub async fn login(
     cookies.add_private(Cookie::new("username", user.username));
 
     Ok(Redirect::to("/dashboard"))
+}
+
+#[post("/api/user/delete", data = "<password>")]
+pub async fn delete(
+    user: User,
+    password: Form<String>,
+    pool: &State<Pool<MySql>>,
+    cookies: &CookieJar<'_>,
+) -> Result<Redirect, Redirect>{
+    println!("user: {}, pass: {}", &user.username, &password.to_string());
+    let verified = database::verify_hash(pool, &user.username, password.clone())
+        .await
+        .map_err(|e| match e {
+            sqlx::Error::RowNotFound => Redirect::to("/settings/delete?error=VERIFICATION_FAILED"),
+            _ => Redirect::to("/settings/delete?error=VERIFICATION_FAILED"),
+        })?;
+
+    if !verified {
+        return Ok(Redirect::to("/settings/delete?error=INVALID_PASS"));
+    }
+
+    match database::delete_user(pool, &user.username).await {
+        Ok(_) => { 
+            cookies.remove_private(cookies.get_private("username").expect("The user should have cookies at this point"));
+            Ok(Redirect::to("/"))
+        },
+        Err(_) => Err(Redirect::to("/settings/delete?error=DELETION_FAILED"))
+    }
 }
 
 #[get("/api/user/status")]

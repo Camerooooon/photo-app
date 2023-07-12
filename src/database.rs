@@ -60,6 +60,13 @@ pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, E
     })
 }
 
+pub async fn delete_user(pool: &Pool<MySql>, username: &String) -> Result<(), Error> {
+    sqlx::query!("DELETE FROM users WHERE username = ?", username)
+        .execute(pool)
+        .await?;
+    Ok(())
+}
+
 pub async fn verify_hash(
     pool: &Pool<MySql>,
     username: &String,

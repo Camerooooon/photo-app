@@ -51,7 +51,7 @@
                 Danger Zone
             </h5>
             <div class="ui bottom attached segment">
-                <button class="fluid negative ui button">Delete my account</button>
+                <a href="/settings/delete" class="fluid negative ui button">Delete my account</a>
             </div>
         </div>
     </body>

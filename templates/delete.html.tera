@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/semantic/dist/icon.min.css">
+        <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+        <script src="semantic/dist/semantic.min.js"></script>
+        <title>Settings</title>
+    </head>
+    <body>
+        <div class="ui raised very padded text container" style="margin: 3em">
+            <div class="ui massive breadcrumb">
+                <a href="/dashboard" class="section">Dashboard</a>
+                <span class="divider">/</span>
+                <a href="/settings" class="section">Settings</a>
+                <span class="divider">/</span>
+                <div class="active section">Delete Account</div>
+            </div>
+            <h5 class="ui top negative attached message">
+                Danger Zone
+            </h5>
+            <div class="ui bottom attached negative message">
+                {% if error %}
+                <div class="ui error message transition icon">
+                    <i class="exclamation triangle icon"></i>
+                    <div class="header">
+                        There were some errors with your submission
+                    </div>
+                    {{ error }}
+                </div>
+                {% endif %}
+                <form action="/api/user/delete" method="POST">
+                <div class="ui form">
+                <div class="field">
+                    <div class="ui fluid left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Confirm your account password">
+                    </div>
+                </div>
+                <div>
+                <button class="negative submit ui button" onclick="submit.call(this)">Delete my account</button>
+                </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

@@ -29,6 +29,7 @@ async fn rocket() -> _ {
                 interface::register,
                 interface::dashboard,
                 interface::settings,
+                interface::delete,
                 interface::semantic_js,
                 interface::semantic_css,
                 interface::semantic_icon_css,
@@ -48,6 +49,7 @@ async fn rocket() -> _ {
             "/",
             routes![
                 user_manager::signup,
+                user_manager::delete,
                 user_manager::login,
                 user_manager::status
             ],

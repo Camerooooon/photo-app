@@ -120,3 +120,19 @@ pub async fn settings(user: User) -> Result<Template, String> {
         },
     ))
 }
+
+#[get("/settings/delete?<error>")]
+pub async fn delete(_user: User, error: Option<String>) -> Result<Template, String> {
+    let error_message = match error.unwrap_or_default().as_str() {
+        "INVALID_PASS" => "That password was incorrect",
+        "VERIFICATION_FAILED" => "Could not verify your account, please contact the server administrator",
+        "DELETION_FAILED" => "Could not delete your account, please contact the server administrator",
+        _ => "",
+    };
+    Ok(Template::render(
+        "delete",
+        context! {
+            error: error_message
+        },
+    ))
+}
