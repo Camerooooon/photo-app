@@ -60,7 +60,24 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
                     Err(_) => Outcome::Forward(()),
                 }
             }
-            None => Outcome::Forward(()),
+            None => {
+                // Do ApiKey authentication
+                match database::fetch_key(pool, &request.headers().get_one("authorization").unwrap_or("").to_string()).await {
+                    Ok(key) => {
+                        match database::fetch_user(pool, &key.owner.to_string()).await {
+                            Ok(user) => {
+                                if user.permissions.is_empty() {
+                                    Outcome::Forward(())
+                                } else {
+                                    Outcome::Success(AuthenticatedUser { user })
+                                }
+                            }
+                            Err(_) => Outcome::Forward(()),
+                        }
+                    },
+                    Err(_) => Outcome::Forward(()),
+                }
+            },
         }
     }
 }
