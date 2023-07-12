@@ -24,3 +24,11 @@ CREATE TABLE IF NOT EXISTS users (
     hashed_password TEXT NOT NULL,
     permissions TEXT NOT NULL
 );
+
+-- Initialise table for api keys
+CREATE TABLE IF NOT EXISTS apikeys(
+    created BIGINT NOT NULL,
+    owner TEXT NOT NULL,
+    secret TEXT NOT NULL,
+    permissions TEXT NOT NULL
+);

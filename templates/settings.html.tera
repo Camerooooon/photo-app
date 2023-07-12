@@ -50,8 +50,7 @@
             <h5 class="ui top attached header">
                 API Keys
             </h5>
-            <div class="ui bottom attached segment">
-                <table class="ui celled striped table">
+                <table class="ui celled striped table attached bottom compact">
                     <thead>
                         <tr><th>
                                 Created
@@ -70,12 +69,17 @@
                                 </td>
                                 <td>[Upload, Finance]</td>
                                 <td class="right aligned collapsing">
-                                    <button class="negative ui button small icon" onclick="submit.call(this)"><i class="trash icon"></i></button>
+                                    <button class="ui button tiny icon" onclick="submit.call(this)"><i class="edit icon"></i></button>
+                                    <button class="ui button tiny icon" onclick="submit.call(this)"><i class="trash icon"></i></button>
                                 </td>
                             </tr>
                         </tbody>
                 </table>
-            </div>
+                <div class="ui bottom attached segment">
+                    <div class="ui floated tiny primary labeled icon button">
+                        <i class="plus icon"></i> New API Key
+                    </div>
+                </div>
 
             <h5 class="ui top negative attached header">
                 Danger Zone

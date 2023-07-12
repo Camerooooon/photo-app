@@ -6,6 +6,7 @@ pub mod image_manager;
 pub mod interface;
 pub mod models;
 pub mod user_manager;
+pub mod api_key_manager;
 
 use rocket_dyn_templates::Template;
 

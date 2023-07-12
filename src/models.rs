@@ -31,8 +31,16 @@ pub struct User {
     pub permissions: Vec<Permission>,
 }
 
+#[derive(Debug)]
+pub struct ApiKey {
+    pub owner: String,
+    pub created: SystemTime,
+    pub secret: String,
+    pub permissions: Vec<Permission>,
+}
+
 #[derive(
-    Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize,
+    Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize, FromFormField, Clone
 )]
 #[serde(crate = "rocket::serde")]
 pub enum Permission {
