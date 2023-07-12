@@ -23,6 +23,11 @@ pub async fn new_key(
 
     match request_opt.into_inner() {
         Some(request) => {
+            for permission in &request.permissions {
+                if !user.permissions.contains(&permission) {
+                    return Redirect::to("/settings?notice=KEY_CREATION_ERROR");
+                }
+            }
             let key = generate_api_key(user.username,request.permissions.to_vec());
             println!("{:?}", key);
             Redirect::to("/settings?notice=KEY_CREATED")
