@@ -28,6 +28,7 @@ async fn rocket() -> _ {
                 interface::login,
                 interface::register,
                 interface::dashboard,
+                interface::settings,
                 interface::semantic_js,
                 interface::semantic_css,
                 interface::semantic_icon_css,

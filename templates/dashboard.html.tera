@@ -22,6 +22,9 @@
             {% endif %}
             <h2 class="ui header">Welcome back {{ username }}!</h2>
             <p>Test</p>
+            <div class="ui horizontal divider">
+                My Photographs
+            </div>
             <p></p>
             <div class="ui link cards">
             </div>

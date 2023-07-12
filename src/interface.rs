@@ -1,4 +1,6 @@
-use rocket::Request;
+use std::time::SystemTime;
+
+use chrono_humanize::{HumanTime, Accuracy, Tense};
 use rocket::http::{ContentType, CookieJar};
 use rocket::{State, fs::NamedFile};
 use rocket_dyn_templates::{context, Template};
@@ -102,6 +104,18 @@ pub async fn dashboard(user: User) -> Result<Template, String> {
         context! {
             notice: notice_message,
             permissions: user.permissions,
+            username: user.username
+        },
+    ))
+}
+
+#[get("/settings")]
+pub async fn settings(user: User) -> Result<Template, String> {
+    Ok(Template::render(
+        "settings",
+        context! {
+            permissions: user.permissions,
+            created: HumanTime::from(user.created).to_text_en(Accuracy::Rough, Tense::Past),
             username: user.username
         },
     ))
