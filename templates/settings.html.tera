@@ -50,7 +50,7 @@
             <h5 class="ui top attached header">
                 API Keys
             </h5>
-                <table class="ui celled striped table attached bottom compact">
+                <table class="ui celled striped table attached bottom">
                     <thead>
                         <tr><th>
                                 Created
@@ -69,8 +69,13 @@
                                 </td>
                                 <td>[Upload, Finance]</td>
                                 <td class="right aligned collapsing">
-                                    <button class="ui button tiny icon" onclick="submit.call(this)"><i class="edit icon"></i></button>
-                                    <button class="ui button tiny icon" onclick="submit.call(this)"><i class="trash icon"></i></button>
+                                    <button name="table-popup" data-content="Edit API key" class="ui button tiny icon" onclick="submit.call(this)"><i class="edit icon"></i></button>
+                                    <button name="table-popup" data-content="Delete API key" class="ui button tiny icon" onclick="submit.call(this)"><i class="trash icon"></i></button>
+                                    <script>
+                                        $('button[name="table-popup"]')
+                                            .popup()
+                                        ;
+                                    </script>
                                 </td>
                             </tr>
                         </tbody>
