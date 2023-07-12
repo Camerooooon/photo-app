@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{Category, ImageGroup, ImageMeta, Permission, Privacy, User};
+use crate::models::{Category, ImageGroup, ImageMeta, Permission, Privacy, User, ApiKey};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
@@ -116,6 +116,28 @@ pub async fn write_group(pool: &Pool<MySql>, group: &ImageGroup) -> Result<(), E
         group.name,
         group.privacy.to_string(),
         group.id
+    )
+    .execute(pool)
+    .await?;
+    Ok(())
+}
+
+/// Writes a `ApiKey` to a specified database pool
+pub async fn write_key(pool: &Pool<MySql>, key: &ApiKey) -> Result<(), Error> {
+    sqlx::query!(
+        "INSERT INTO apikeys VALUES(?, ?, ?, ?)",
+        key
+            .created
+            .duration_since(UNIX_EPOCH)
+            .expect("Unexpected duration")
+            .as_millis() as u64,
+        key.owner,
+        key.secret,
+        key.permissions
+            .iter()
+            .map(|e| e.to_string())
+            .collect::<Vec<String>>()
+            .join(",")
     )
     .execute(pool)
     .await?;
