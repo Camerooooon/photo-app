@@ -60,6 +60,23 @@ pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, E
     })
 }
 
+pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Error> {
+    let response = sqlx::query!("SELECT * FROM apikeys WHERE secret = ?", secret)
+        .fetch_one(pool)
+        .await?;
+    Ok(ApiKey {
+        created:  SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
+        owner: response.owner,
+        secret: response.secret,
+        permissions: response
+            .permissions
+            .split(",")
+            .filter(|s| !s.is_empty())
+            .into_iter()
+            .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
+            .collect(),
+    })
+}
 pub async fn delete_user(pool: &Pool<MySql>, username: &String) -> Result<(), Error> {
     sqlx::query!("DELETE FROM users WHERE username = ?", username)
         .execute(pool)
