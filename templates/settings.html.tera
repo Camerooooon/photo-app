@@ -47,6 +47,36 @@
                     </div>
                 </div>
             </div>
+            <h5 class="ui top attached header">
+                API Keys
+            </h5>
+            <div class="ui bottom attached segment">
+                <table class="ui celled striped table">
+                    <thead>
+                        <tr><th>
+                                Created
+                            </th>
+                            <th>
+                                Permissions
+                            </th>
+                            <th>
+                                Action
+                            </th>
+                        </tr></thead>
+                        <tbody>
+                            <tr>
+                                <td class="collapsing">
+                                    10 hours ago
+                                </td>
+                                <td>[Upload, Finance]</td>
+                                <td class="right aligned collapsing">
+                                    <button class="negative ui button small icon" onclick="submit.call(this)"><i class="trash icon"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                </table>
+            </div>
+
             <h5 class="ui top negative attached header">
                 Danger Zone
             </h5>
