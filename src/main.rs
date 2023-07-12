@@ -31,6 +31,7 @@ async fn rocket() -> _ {
                 interface::dashboard,
                 interface::settings,
                 interface::delete,
+                interface::new_api_key,
                 interface::semantic_js,
                 interface::semantic_css,
                 interface::semantic_icon_css,
@@ -54,6 +55,12 @@ async fn rocket() -> _ {
                 user_manager::login,
                 user_manager::status
             ],
+        )
+        .mount(
+            "/",
+            routes![
+                api_key_manager::new_key,
+            ]
         )
         .attach(Template::fairing())
         .manage(pool)

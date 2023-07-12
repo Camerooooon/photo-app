@@ -7,16 +7,28 @@ use sqlx_mysql::MySql;
 
 use crate::models::{User, Permission, ApiKey};
 
-#[post("/api/key/new", data="<permissions>")]
+#[derive(FromForm)]
+pub struct CreateApiKeyRequest {
+    pub permissions: Vec<Permission>,
+    /// Expiration in minutes
+    pub expiration: i32,
+}
+
+#[post("/api/key/new", data="<request_opt>")]
 pub async fn new_key(
     pool: &State<Pool<MySql>>,
     user: User,
-    permissions: Form<Vec<Permission>>,
-) -> Result<Redirect, Redirect> {
+    request_opt: Form<Option<CreateApiKeyRequest>>,
+) -> Redirect {
 
-    let key = generate_api_key(user.username,permissions.to_vec());
-    println!("{:?}", key);
-    todo!()
+    match request_opt.into_inner() {
+        Some(request) => {
+            let key = generate_api_key(user.username,request.permissions.to_vec());
+            println!("{:?}", key);
+            Redirect::to("/settings?notice=KEY_CREATED")
+        }
+        None => Redirect::to("/settings/key/new?error=MISSING_FIELDS"),
+    }
 }
 
 /// Generates image meta data from the current time

@@ -21,7 +21,7 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
 
 #[get("/semantic/dist/semantic.min.js")]
 pub async fn semantic_js() -> (ContentType, NamedFile) {
-    let content_type = ContentType::new("application", "javascript");
+    let content_type = ContentType::new("text", "javascript");
     let file = NamedFile::open("./static/semantic.min.js").await.unwrap();
 
     (content_type, file)
@@ -133,6 +133,16 @@ pub async fn delete(_user: User, error: Option<String>) -> Result<Template, Stri
         "delete",
         context! {
             error: error_message
+        },
+    ))
+}
+
+#[get("/settings/key/new")]
+pub async fn new_api_key(user: User) -> Result<Template, String> {
+    Ok(Template::render(
+        "newapikey",
+        context! {
+            permissions: user.permissions,
         },
     ))
 }
