@@ -44,7 +44,7 @@
                     <div class="field">
                         <label>Expiration</label>
                         <div class="ui selection dropdown">
-                            <input type="hidden" name="expiration" required>
+                            <input type="hidden" name="expiration_minutes" required>
                             <i class="dropdown icon"></i>
                             <div class="default text">Expiration</div>
                             <div class="menu">
