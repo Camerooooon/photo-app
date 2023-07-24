@@ -25,14 +25,6 @@ pub struct ImageGroup {
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
-pub struct User {
-    pub username: String,
-    pub created: SystemTime,
-    pub permissions: Vec<Permission>,
-}
-
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(crate = "rocket::serde")]
 pub struct ApiKey {
     pub owner: String,
     pub created: SystemTime,

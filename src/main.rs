@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate rocket;
 
+pub mod users;
+
 pub mod database;
 pub mod image_manager;
 pub mod interface;
