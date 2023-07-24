@@ -6,7 +6,6 @@ pub mod keys;
 pub mod images;
 
 pub mod database;
-pub mod image_manager;
 pub mod interface;
 pub mod models;
 pub mod filters;
