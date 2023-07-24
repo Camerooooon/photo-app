@@ -72,7 +72,7 @@ pub async fn settings(user: User, pool: &State<Pool<MySql>>) -> Result<Template,
     Ok(Template::render(
         "settings",
         context! {
-            apikeys: get_recent_api_keys(&pool).await.unwrap_or(vec![]),
+            apikeys: get_recent_api_keys(&pool, &user).await.unwrap_or(vec![]),
             permissions: user.permissions,
             created: HumanTime::from(user.created).to_text_en(Accuracy::Rough, Tense::Past),
             username: user.username

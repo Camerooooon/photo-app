@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
-use crate::models::Permission;
+use crate::{models::Permission, users::user::User};
 
 use super::key::ApiKey;
 
@@ -48,10 +48,8 @@ pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Er
     })
 }
 
-/// Get the recent uploaded images from the sql pool
-/// Will not show images marked as `Unlisted`
-pub async fn get_recent_api_keys(pool: &Pool<MySql>) -> Result<Vec<ApiKey>, Error> {
-    let keys = sqlx::query!("SELECT * FROM apikeys ORDER BY created LIMIT 50")
+pub async fn get_recent_api_keys(pool: &Pool<MySql>, user: &User) -> Result<Vec<ApiKey>, Error> {
+    let keys = sqlx::query!("SELECT * FROM apikeys WHERE owner = ? ORDER BY created LIMIT 50", user.username)
         .fetch_all(pool)
         .await?;
     let mut to_return: Vec<ApiKey> = vec![];
