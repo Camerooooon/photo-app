@@ -5,7 +5,8 @@ use rocket::{State, response::Redirect, form::Form};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{models::{User, Permission, ApiKey}, database};
+use crate::{models::{Permission, ApiKey}, database};
+use crate::users::user::User;
 
 #[derive(FromForm)]
 pub struct CreateApiKeyRequest {

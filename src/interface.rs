@@ -6,7 +6,8 @@ use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{database, models::User};
+use crate::database;
+use crate::users::user::User;
 
 #[get("/")]
 pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {

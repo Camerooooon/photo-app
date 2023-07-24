@@ -7,7 +7,6 @@ pub mod database;
 pub mod image_manager;
 pub mod interface;
 pub mod models;
-pub mod user_manager;
 pub mod api_key_manager;
 pub mod filters;
 
@@ -53,10 +52,10 @@ async fn rocket() -> _ {
         .mount(
             "/",
             routes![
-                user_manager::signup,
-                user_manager::delete,
-                user_manager::login,
-                user_manager::status
+                users::user_api::signup,
+                users::user_api::delete,
+                users::user_api::login,
+                users::user_api::status
             ],
         )
         .mount(

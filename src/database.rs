@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{Category, ImageGroup, ImageMeta, Permission, Privacy, User, ApiKey};
+use crate::models::{Category, ImageGroup, ImageMeta, Permission, Privacy, ApiKey};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
