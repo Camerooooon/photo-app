@@ -2,12 +2,12 @@
 extern crate rocket;
 
 pub mod users;
+pub mod keys;
 
 pub mod database;
 pub mod image_manager;
 pub mod interface;
 pub mod models;
-pub mod api_key_manager;
 pub mod filters;
 
 use rocket_dyn_templates::Template;
@@ -61,7 +61,7 @@ async fn rocket() -> _ {
         .mount(
             "/",
             routes![
-                api_key_manager::new_key,
+                keys::key_api::new_key,
             ]
         )
         .attach(Template::custom(|engines| {

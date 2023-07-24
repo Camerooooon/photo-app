@@ -23,16 +23,6 @@ pub struct ImageGroup {
     pub id: String,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-#[serde(crate = "rocket::serde")]
-pub struct ApiKey {
-    pub owner: String,
-    pub created: SystemTime,
-    pub expires: Duration,
-    pub secret: String,
-    pub permissions: Vec<Permission>,
-}
-
 #[derive(
     Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize, FromFormField, Clone
 )]

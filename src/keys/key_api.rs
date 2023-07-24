@@ -1,11 +1,10 @@
-use std::time::{SystemTime, Duration};
+use std::time::Duration;
 
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use rocket::{State, response::Redirect, form::Form};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{models::{Permission, ApiKey}, database};
+use crate::{models::Permission, keys::{key_repository::write_key, key_generator::generate_api_key}};
 use crate::users::user::User;
 
 #[derive(FromForm)]
@@ -31,7 +30,7 @@ pub async fn new_key(
             }
             let key = generate_api_key(user.username,Duration::from_secs_f32((request.expiration*60) as f32), request.permissions.to_vec());
             println!("{:?}", key);
-            match database::write_key(pool, &key).await {
+            match write_key(pool, &key).await {
                 Ok(_) => { return Redirect::to("/settings?notice=KEY_CREATED") },
                 Err(_) => { return Redirect::to("/settings?notice=KEY_CREATION_ERROR") }
             };
@@ -40,19 +39,3 @@ pub async fn new_key(
     }
 }
 
-/// Generates image meta data from the current time
-fn generate_api_key(owner: String, expires: Duration, permissions: Vec<Permission>) -> ApiKey {
-    // Generate a random name for the image file
-    let secret: String = thread_rng()
-        .sample_iter(&Alphanumeric)
-        .take(25)
-        .map(char::from)
-        .collect::<String>();
-    ApiKey {
-        owner,
-        created: SystemTime::now(),
-        secret,
-        permissions,
-        expires
-    }
-}

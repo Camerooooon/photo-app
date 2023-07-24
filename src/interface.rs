@@ -7,6 +7,7 @@ use sqlx::Pool;
 use sqlx_mysql::MySql;
 
 use crate::database;
+use crate::keys::key_repository::get_recent_api_keys;
 use crate::users::user::User;
 
 #[get("/")]
@@ -114,7 +115,7 @@ pub async fn settings(user: User, pool: &State<Pool<MySql>>) -> Result<Template,
     Ok(Template::render(
         "settings",
         context! {
-            apikeys: database::get_recent_api_keys(&pool).await.unwrap_or(vec![]),
+            apikeys: get_recent_api_keys(&pool).await.unwrap_or(vec![]),
             permissions: user.permissions,
             created: HumanTime::from(user.created).to_text_en(Accuracy::Rough, Tense::Past),
             username: user.username

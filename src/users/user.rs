@@ -4,7 +4,7 @@ use rocket::{serde::{Serialize, Deserialize}, request::{FromRequest, Outcome}, R
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{models::Permission, database::fetch_key};
+use crate::{models::Permission, keys::key_repository::fetch_key};
 
 use super::user_repository::fetch_user;
 
