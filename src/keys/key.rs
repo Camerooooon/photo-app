@@ -1,4 +1,4 @@
-use std::time::{SystemTime, Duration};
+use std::time::{Duration, SystemTime};
 
 use rocket::serde::{Deserialize, Serialize};
 
@@ -13,4 +13,3 @@ pub struct ApiKey {
     pub secret: String,
     pub permissions: Vec<Permission>,
 }
-

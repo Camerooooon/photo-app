@@ -3,7 +3,8 @@ use regex::Regex;
 use rocket::{
     form::Form,
     http::{Cookie, CookieJar},
-    response::Redirect, State,
+    response::Redirect,
+    State,
 };
 use sqlx::Pool;
 use sqlx_mysql::MySql;
@@ -11,7 +12,10 @@ use std::time::SystemTime;
 
 use crate::users::user::AuthenticatedUser;
 
-use super::{user::User, user_repository::{fetch_user, write_user, delete_user, verify_hash}};
+use super::{
+    user::User,
+    user_repository::{delete_user, fetch_user, verify_hash, write_user},
+};
 
 #[derive(FromForm)]
 pub struct UserCredentials {
@@ -83,12 +87,10 @@ pub async fn login(
         return Ok(Redirect::to("/login?error=INVALID_USER_PASS"));
     }
 
-    let user = fetch_user(pool, &username)
-        .await
-        .map_err(|e| match e {
-            sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
-            _ => Redirect::to("/login?error=VERIFACTION_FAILED"),
-        })?;
+    let user = fetch_user(pool, &username).await.map_err(|e| match e {
+        sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
+        _ => Redirect::to("/login?error=VERIFACTION_FAILED"),
+    })?;
     cookies.add_private(Cookie::new("username", user.username));
 
     Ok(Redirect::to("/dashboard"))
@@ -100,7 +102,7 @@ pub async fn delete(
     password: Form<String>,
     pool: &State<Pool<MySql>>,
     cookies: &CookieJar<'_>,
-) -> Result<Redirect, Redirect>{
+) -> Result<Redirect, Redirect> {
     let verified = verify_hash(pool, &user.username, password.clone())
         .await
         .map_err(|e| match e {
@@ -113,11 +115,15 @@ pub async fn delete(
     }
 
     match delete_user(pool, &user.username).await {
-        Ok(_) => { 
-            cookies.remove_private(cookies.get_private("username").expect("The user should have cookies at this point"));
+        Ok(_) => {
+            cookies.remove_private(
+                cookies
+                    .get_private("username")
+                    .expect("The user should have cookies at this point"),
+            );
             Ok(Redirect::to("/"))
-        },
-        Err(_) => Err(Redirect::to("/settings/delete?error=DELETION_FAILED"))
+        }
+        Err(_) => Err(Redirect::to("/settings/delete?error=DELETION_FAILED")),
     }
 }
 

@@ -1,6 +1,6 @@
 use std::time::{Duration, SystemTime};
 
-use rand::{thread_rng, distributions::Alphanumeric, Rng};
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 
 use crate::models::Permission;
 
@@ -19,6 +19,6 @@ pub fn generate_api_key(owner: String, expires: Duration, permissions: Vec<Permi
         created: SystemTime::now(),
         secret,
         permissions,
-        expires
+        expires,
     }
 }

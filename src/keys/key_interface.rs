@@ -1,4 +1,4 @@
-use rocket_dyn_templates::{Template, context};
+use rocket_dyn_templates::{context, Template};
 
 use crate::users::user::User;
 

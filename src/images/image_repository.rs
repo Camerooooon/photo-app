@@ -1,10 +1,9 @@
-use std::time::{UNIX_EPOCH, SystemTime, Duration};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use sqlx::{Pool, Error};
+use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
-use super::image::{ImageMeta, ImageGroup, Privacy, Category};
-
+use super::image::{Category, ImageGroup, ImageMeta, Privacy};
 
 /// Writes some image metadata to the specified database pool
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
@@ -85,7 +84,6 @@ pub async fn get_recent_images(pool: &Pool<MySql>) -> Result<Vec<ImageMeta>, Err
     }
     Ok(to_return)
 }
-
 
 pub async fn read_image_metadata(pool: &Pool<MySql>, url: String) -> Result<ImageMeta, Error> {
     let response = sqlx::query!("SELECT * FROM images WHERE url = ?", url)

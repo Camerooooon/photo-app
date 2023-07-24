@@ -1,8 +1,14 @@
 use rocket::serde::{Deserialize, Serialize};
 
-
 #[derive(
-    Debug, PartialEq, strum_macros::Display, strum_macros::EnumString, Deserialize, Serialize, FromFormField, Clone
+    Debug,
+    PartialEq,
+    strum_macros::Display,
+    strum_macros::EnumString,
+    Deserialize,
+    Serialize,
+    FromFormField,
+    Clone,
 )]
 #[serde(crate = "rocket::serde")]
 pub enum Permission {
@@ -11,4 +17,3 @@ pub enum Permission {
     Finance,
     Unknown,
 }
-

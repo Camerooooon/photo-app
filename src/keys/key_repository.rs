@@ -1,6 +1,6 @@
-use std::time::{SystemTime, Duration, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use sqlx::{Pool, Error};
+use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
 use crate::models::Permission;
@@ -11,8 +11,7 @@ use super::key::ApiKey;
 pub async fn write_key(pool: &Pool<MySql>, key: &ApiKey) -> Result<(), Error> {
     sqlx::query!(
         "INSERT INTO apikeys VALUES(?, ?, ?, ?, ?)",
-        key
-            .created
+        key.created
             .duration_since(UNIX_EPOCH)
             .expect("Unexpected duration")
             .as_millis() as u64,
@@ -35,7 +34,7 @@ pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Er
         .fetch_one(pool)
         .await?;
     Ok(ApiKey {
-        created:  SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
+        created: SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
         owner: response.owner,
         secret: response.secret,
         permissions: response
@@ -45,7 +44,7 @@ pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Er
             .into_iter()
             .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
             .collect(),
-        expires: Duration::from_millis(response.expires as u64)
+        expires: Duration::from_millis(response.expires as u64),
     })
 }
 
@@ -58,10 +57,11 @@ pub async fn get_recent_api_keys(pool: &Pool<MySql>) -> Result<Vec<ApiKey>, Erro
     let mut to_return: Vec<ApiKey> = vec![];
     for key in keys {
         let apikey = ApiKey {
-            created:  SystemTime::UNIX_EPOCH + Duration::from_millis(key.created as u64),
+            created: SystemTime::UNIX_EPOCH + Duration::from_millis(key.created as u64),
             owner: key.owner,
             secret: key.secret,
-            permissions: key.permissions
+            permissions: key
+                .permissions
                 .split(",")
                 .filter(|s| !s.is_empty())
                 .into_iter()

@@ -1,14 +1,14 @@
 #[macro_use]
 extern crate rocket;
 
-pub mod users;
-pub mod keys;
 pub mod images;
+pub mod keys;
+pub mod users;
 
 pub mod database;
+pub mod filters;
 pub mod interface;
 pub mod models;
-pub mod filters;
 
 use rocket_dyn_templates::Template;
 
@@ -58,15 +58,14 @@ async fn rocket() -> _ {
                 users::user_api::status
             ],
         )
-        .mount(
-            "/",
-            routes![
-                keys::key_api::new_key,
-            ]
-        )
+        .mount("/", routes![keys::key_api::new_key,])
         .attach(Template::custom(|engines| {
-            engines.tera.register_filter("format_time_ago", filters::format_time_ago);
-            engines.tera.register_filter("format_time_future", filters::format_duration);
+            engines
+                .tera
+                .register_filter("format_time_ago", filters::format_time_ago);
+            engines
+                .tera
+                .register_filter("format_time_future", filters::format_duration);
         }))
         .manage(pool)
 }

@@ -5,32 +5,45 @@ use std::time::UNIX_EPOCH;
 use chrono_humanize::Accuracy;
 use chrono_humanize::HumanTime;
 use chrono_humanize::Tense;
-use rocket_dyn_templates::tera::{Value, to_value};
+use rocket_dyn_templates::tera::{to_value, Value};
 
-pub fn format_time_ago(epoch_secs: &Value, _: &HashMap<String, Value>) -> rocket_dyn_templates::tera::Result<Value> {
+pub fn format_time_ago(
+    epoch_secs: &Value,
+    _: &HashMap<String, Value>,
+) -> rocket_dyn_templates::tera::Result<Value> {
     if let Value::Object(n) = epoch_secs {
-
         println!("{:?}", n);
         if let Some(secs) = (match n.get("secs_since_epoch") {
             Some(v) => v,
-            None => {return Err("Missing number".into())},
-        }).as_u64() {
-            return to_value(HumanTime::from(UNIX_EPOCH + Duration::from_secs(secs)).to_text_en(Accuracy::Rough, Tense::Past)).map_err(|_| rocket_dyn_templates::tera::Error::msg("Could not map tense"));
+            None => return Err("Missing number".into()),
+        })
+        .as_u64()
+        {
+            return to_value(
+                HumanTime::from(UNIX_EPOCH + Duration::from_secs(secs))
+                    .to_text_en(Accuracy::Rough, Tense::Past),
+            )
+            .map_err(|_| rocket_dyn_templates::tera::Error::msg("Could not map tense"));
         }
     }
 
     Err("Invalid duration".into())
 }
 
-pub fn format_duration(secs: &Value, _: &HashMap<String, Value>) -> rocket_dyn_templates::tera::Result<Value> {
+pub fn format_duration(
+    secs: &Value,
+    _: &HashMap<String, Value>,
+) -> rocket_dyn_templates::tera::Result<Value> {
     if let Value::Object(n) = secs {
-
         println!("{:?}", n);
         if let Some(secs) = (match n.get("secs") {
             Some(v) => v,
-            None => {return Err("Missing number".into())},
-        }).as_u64() {
-            return to_value(human_readable_duration(secs)).map_err(|_| rocket_dyn_templates::tera::Error::msg("Could not format duration"));
+            None => return Err("Missing number".into()),
+        })
+        .as_u64()
+        {
+            return to_value(human_readable_duration(secs))
+                .map_err(|_| rocket_dyn_templates::tera::Error::msg("Could not format duration"));
         }
     }
 
