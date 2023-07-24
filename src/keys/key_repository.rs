@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
-use crate::{models::Permission, users::user::User};
+use crate::{models::{Permission, from_comma_seperated_string}, users::user::User};
 
 use super::key::ApiKey;
 
@@ -38,13 +38,7 @@ pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Er
         created: SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
         owner: response.owner,
         secret: response.secret,
-        permissions: response
-            .permissions
-            .split(",")
-            .filter(|s| !s.is_empty())
-            .into_iter()
-            .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
-            .collect(),
+        permissions: from_comma_seperated_string(response.permissions),
         expires: Duration::from_millis(response.expires as u64),
         id: Some(response.id),
     })
@@ -60,13 +54,7 @@ pub async fn get_recent_api_keys(pool: &Pool<MySql>, user: &User) -> Result<Vec<
             created: SystemTime::UNIX_EPOCH + Duration::from_millis(key.created as u64),
             owner: key.owner,
             secret: key.secret,
-            permissions: key
-                .permissions
-                .split(",")
-                .filter(|s| !s.is_empty())
-                .into_iter()
-                .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
-                .collect(),
+            permissions: from_comma_seperated_string(key.permissions),
             expires: Duration::from_millis(key.expires as u64),
             id: Some(key.id)
         };
