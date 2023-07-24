@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
-use crate::{models::{Permission, from_comma_seperated_string}, users::user::User};
+use crate::{models::from_comma_seperated_string, users::user::User};
 
 use super::key::ApiKey;
 
