@@ -58,6 +58,7 @@ pub async fn signup(
         username,
         created: SystemTime::now(),
         permissions: vec![],
+        id: None,
     };
 
     write_user(&pool, &user, hashed_password)

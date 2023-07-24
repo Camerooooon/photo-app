@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS users (
     created BIGINT NOT NULL,
     username TEXT NOT NULL UNIQUE,
     hashed_password TEXT NOT NULL,
-    permissions TEXT NOT NULL
+    permissions TEXT NOT NULL,
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE
 );
 
 -- Initialise table for api keys

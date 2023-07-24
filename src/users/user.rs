@@ -18,6 +18,7 @@ pub struct User {
     pub username: String,
     pub created: SystemTime,
     pub permissions: Vec<Permission>,
+    pub id: Option<u32>,
 }
 
 pub struct AuthenticatedUser {

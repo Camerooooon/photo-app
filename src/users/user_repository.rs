@@ -14,7 +14,7 @@ pub async fn write_user(
     hashed_password: String,
 ) -> Result<(), Error> {
     sqlx::query!(
-        "INSERT INTO users VALUES(?, ?, ?, ?)",
+        "INSERT INTO users VALUES(?, ?, ?, ?, ?)",
         user.created
             .duration_since(UNIX_EPOCH)
             .expect("Unexpected duration")
@@ -25,7 +25,8 @@ pub async fn write_user(
             .iter()
             .map(|e| e.to_string())
             .collect::<Vec<String>>()
-            .join(",")
+            .join(","),
+        0
     )
     .execute(pool)
     .await?;
@@ -46,6 +47,7 @@ pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, E
             .into_iter()
             .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
             .collect(),
+        id: Some(response.id)
     })
 }
 
