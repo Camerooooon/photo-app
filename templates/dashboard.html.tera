@@ -22,12 +22,79 @@
             {% endif %}
             <h2 class="ui header">Welcome back {{ username }}!</h2>
             <p>Test</p>
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input class="prompt" type="text" placeholder="Search countries...">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+            <script>
+                var content = [
+                    {title: "4 Alive 1 Dead"}
+                ];
+                $('.ui.search')
+                    .search({
+                        source: content
+                    })
+                ;
+            </script>
             <div class="ui horizontal divider">
-                My Photographs
+                Orders
             </div>
-            <p></p>
-            <div class="ui link cards">
-            </div>
+            <table class="ui striped table compact">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Photograph</th>
+                        <th>Quantity</th>
+                        <th>Order Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cameron</td>
+                        <td>4 Dead 1 Alive</td>
+                        <td>3</td>
+                        <td><div class="ui horizontal label"><i class="clock icon"></i>Pending</div></td>
+                        <td>
+                            <button name="table-popup" data-content="Manage" class="ui button tiny icon" onclick="submit.call(this)"><i class="pencil icon"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cameron</td>
+                        <td>4 Dead 1 Alive</td>
+                        <td>3</td>
+                        <td><div class="ui yellow horizontal label"><i class="truck icon"></i>Shipped</div></td>
+                        <td>
+                            <button name="table-popup" data-content="Manage" class="ui button tiny icon" onclick="submit.call(this)"><i class="pencil icon"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cameron</td>
+                        <td>4 Dead 1 Alive</td>
+                        <td>3</td>
+                        <td><div class="ui red horizontal label"><i class="x icon"></i>Cancelled</div></td>
+                        <td>
+                            <button name="table-popup" data-content="Manage" class="ui button tiny icon" onclick="submit.call(this)"><i class="pencil icon"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cameron</td>
+                        <td>4 Dead 1 Alive</td>
+                        <td>3</td>
+                        <td><div class="ui green horizontal label"><i class="check icon"></i>Fulfilled</div></td>
+                        <td>
+                            <button name="table-popup" data-content="Manage" class="ui button tiny icon" onclick="submit.call(this)"><i class="pencil icon"></i></button>
+                        </td>
+                </tbody>
+                <script>
+                    $('button[name="table-popup"]')
+                        .popup()
+                    ;
+                </script>
+            </table>
         </div>
     </body>
 </html>
