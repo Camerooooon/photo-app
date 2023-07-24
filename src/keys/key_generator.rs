@@ -20,5 +20,6 @@ pub fn generate_api_key(owner: String, expires: Duration, permissions: Vec<Permi
         secret,
         permissions,
         expires,
+        id: None,
     }
 }

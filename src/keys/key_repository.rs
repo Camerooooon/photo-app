@@ -10,7 +10,7 @@ use super::key::ApiKey;
 /// Writes a `ApiKey` to a specified database pool
 pub async fn write_key(pool: &Pool<MySql>, key: &ApiKey) -> Result<(), Error> {
     sqlx::query!(
-        "INSERT INTO apikeys VALUES(?, ?, ?, ?, ?)",
+        "INSERT INTO apikeys VALUES(?, ?, ?, ?, ?, ?)",
         key.created
             .duration_since(UNIX_EPOCH)
             .expect("Unexpected duration")
@@ -22,7 +22,8 @@ pub async fn write_key(pool: &Pool<MySql>, key: &ApiKey) -> Result<(), Error> {
             .map(|e| e.to_string())
             .collect::<Vec<String>>()
             .join(","),
-        key.expires.as_millis() as i32
+        key.expires.as_millis() as i32,
+        0
     )
     .execute(pool)
     .await?;
@@ -45,6 +46,7 @@ pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Er
             .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
             .collect(),
         expires: Duration::from_millis(response.expires as u64),
+        id: Some(response.id),
     })
 }
 
@@ -66,6 +68,7 @@ pub async fn get_recent_api_keys(pool: &Pool<MySql>, user: &User) -> Result<Vec<
                 .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
                 .collect(),
             expires: Duration::from_millis(key.expires as u64),
+            id: Some(key.id)
         };
         to_return.push(apikey);
     }

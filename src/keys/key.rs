@@ -12,4 +12,5 @@ pub struct ApiKey {
     pub expires: Duration,
     pub secret: String,
     pub permissions: Vec<Permission>,
+    pub id: Option<u32>,
 }
