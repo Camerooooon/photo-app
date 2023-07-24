@@ -1,4 +1,3 @@
-use std::time::SystemTime;
 
 use chrono_humanize::{HumanTime, Accuracy, Tense};
 use rocket::http::{ContentType, CookieJar};
@@ -110,10 +109,11 @@ pub async fn dashboard(user: User) -> Result<Template, String> {
 }
 
 #[get("/settings")]
-pub async fn settings(user: User) -> Result<Template, String> {
+pub async fn settings(user: User, pool: &State<Pool<MySql>>) -> Result<Template, String> {
     Ok(Template::render(
         "settings",
         context! {
+            apikeys: database::get_recent_api_keys(&pool).await.unwrap_or(vec![]),
             permissions: user.permissions,
             created: HumanTime::from(user.created).to_text_en(Accuracy::Rough, Tense::Past),
             username: user.username

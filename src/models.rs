@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use std::time::{SystemTime, Duration};
 
 use rocket::serde::{Deserialize, Serialize};
 
@@ -31,10 +31,12 @@ pub struct User {
     pub permissions: Vec<Permission>,
 }
 
-#[derive(Debug)]
+#[derive(Deserialize, Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
 pub struct ApiKey {
     pub owner: String,
     pub created: SystemTime,
+    pub expires: Duration,
     pub secret: String,
     pub permissions: Vec<Permission>,
 }

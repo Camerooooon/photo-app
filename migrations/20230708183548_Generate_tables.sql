@@ -30,5 +30,6 @@ CREATE TABLE IF NOT EXISTS apikeys(
     created BIGINT NOT NULL,
     owner TEXT NOT NULL,
     secret TEXT NOT NULL,
-    permissions TEXT NOT NULL
+    permissions TEXT NOT NULL,
+    expires BIGINT NOT NULL
 );

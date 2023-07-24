@@ -7,6 +7,7 @@ pub mod interface;
 pub mod models;
 pub mod user_manager;
 pub mod api_key_manager;
+pub mod filters;
 
 use rocket_dyn_templates::Template;
 
@@ -62,6 +63,9 @@ async fn rocket() -> _ {
                 api_key_manager::new_key,
             ]
         )
-        .attach(Template::fairing())
+        .attach(Template::custom(|engines| {
+            engines.tera.register_filter("format_time_ago", filters::format_time_ago);
+            engines.tera.register_filter("format_time_future", filters::format_duration);
+        }))
         .manage(pool)
 }

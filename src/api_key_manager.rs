@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use std::time::{SystemTime, Duration};
 
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use rocket::{State, response::Redirect, form::Form};
@@ -28,7 +28,7 @@ pub async fn new_key(
                     return Redirect::to("/settings?notice=KEY_CREATION_ERROR");
                 }
             }
-            let key = generate_api_key(user.username,request.permissions.to_vec());
+            let key = generate_api_key(user.username,Duration::from_secs_f32((request.expiration*60) as f32), request.permissions.to_vec());
             println!("{:?}", key);
             match database::write_key(pool, &key).await {
                 Ok(_) => { return Redirect::to("/settings?notice=KEY_CREATED") },
@@ -40,7 +40,7 @@ pub async fn new_key(
 }
 
 /// Generates image meta data from the current time
-fn generate_api_key(owner: String, permissions: Vec<Permission>) -> ApiKey {
+fn generate_api_key(owner: String, expires: Duration, permissions: Vec<Permission>) -> ApiKey {
     // Generate a random name for the image file
     let secret: String = thread_rng()
         .sample_iter(&Alphanumeric)
@@ -51,6 +51,7 @@ fn generate_api_key(owner: String, permissions: Vec<Permission>) -> ApiKey {
         owner,
         created: SystemTime::now(),
         secret,
-        permissions
+        permissions,
+        expires
     }
 }
