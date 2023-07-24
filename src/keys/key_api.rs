@@ -48,3 +48,14 @@ pub async fn new_key(
     }
     Redirect::to("/settings/key/new?error=MISSING_FIELDS")
 }
+
+#[post("/api/key/delete", data = "<id>")]
+pub async fn delete_key(
+    pool: &State<Pool<MySql>>,
+    id: Form<u32>,
+) -> Redirect {
+    match super::key_repository::delete_key_by_id(pool,id.into_inner()).await {
+        Ok(_) => {return Redirect::to("/settings?notice=KEY_DELETED")},
+        Err(_) => {return Redirect::to("/settings?notice=KEY_DELETION_ERROR")},
+    };
+}

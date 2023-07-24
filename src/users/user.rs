@@ -8,7 +8,7 @@ use rocket::{
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{keys::key_repository::fetch_key, models::Permission};
+use crate::{keys::key_repository::fetch_key_by_secret, models::Permission};
 
 use super::user_repository::fetch_user;
 
@@ -60,7 +60,7 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
             },
             None => {
                 // Do ApiKey authentication
-                match fetch_key(
+                match fetch_key_by_secret(
                     pool,
                     &request
                         .headers()

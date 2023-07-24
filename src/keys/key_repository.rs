@@ -30,8 +30,22 @@ pub async fn write_key(pool: &Pool<MySql>, key: &ApiKey) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn fetch_key(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Error> {
+pub async fn fetch_key_by_secret(pool: &Pool<MySql>, secret: &String) -> Result<ApiKey, Error> {
     let response = sqlx::query!("SELECT * FROM apikeys WHERE secret = ?", secret)
+        .fetch_one(pool)
+        .await?;
+    Ok(ApiKey {
+        created: SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
+        owner: response.owner,
+        secret: response.secret,
+        permissions: from_comma_seperated_string(response.permissions),
+        expires: Duration::from_millis(response.expires as u64),
+        id: Some(response.id),
+    })
+}
+
+pub async fn fetch_key_by_id(pool: &Pool<MySql>, id: u32) -> Result<ApiKey, Error> {
+    let response = sqlx::query!("SELECT * FROM apikeys WHERE id = ?", id)
         .fetch_one(pool)
         .await?;
     Ok(ApiKey {
@@ -61,4 +75,11 @@ pub async fn get_recent_api_keys(pool: &Pool<MySql>, user: &User) -> Result<Vec<
         to_return.push(apikey);
     }
     Ok(to_return)
+}
+
+pub async fn delete_key_by_id(pool: &Pool<MySql>, id: u32) -> Result<(), Error> {
+    sqlx::query!("DELETE FROM apikeys WHERE id = ?", id)
+        .execute(pool)
+        .await?;
+    Ok(())
 }

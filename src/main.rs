@@ -34,6 +34,7 @@ async fn rocket() -> _ {
                 interface::settings,
                 interface::delete,
                 keys::key_interface::new_api_key,
+                keys::key_interface::delete_api_key,
                 interface::semantic_js,
                 interface::semantic_css,
                 interface::semantic_icon_css,
@@ -58,7 +59,7 @@ async fn rocket() -> _ {
                 users::user_api::status
             ],
         )
-        .mount("/", routes![keys::key_api::new_key,])
+        .mount("/", routes![keys::key_api::new_key, keys::key_api::delete_key])
         .attach(Template::custom(|engines| {
             engines
                 .tera

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="/semantic/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/semantic/dist/icon.min.css">
+        <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+        <script src="/semantic/dist/semantic.min.js"></script>
+        <title>Settings</title>
+    </head>
+    <body>
+        <div class="ui raised very padded text container" style="margin: 3em">
+            <div class="ui massive breadcrumb">
+                <a href="/dashboard" class="section">Dashboard</a>
+                <span class="divider">/</span>
+                <a href="/settings" class="section">Settings</a>
+                <span class="divider">/</span>
+                <div class="active section">Modify API Key</div>
+            </div>
+            <h5 class="ui top attached segment">
+                Deleting API key # {{key.id}}
+            </h5>
+            <div class="ui bottom attached segment">
+                <form action="/api/key/delete" method="POST">
+                    <input type="hidden" name="id" value="{{key.id}}">
+                    <button class="negative submit ui button" onclick="submit.call(this)">Delete this key</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
