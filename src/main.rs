@@ -28,8 +28,8 @@ async fn rocket() -> _ {
             "/",
             routes![
                 interface::index,
-                interface::login,
-                interface::register,
+                users::user_interface::login,
+                users::user_interface::register,
                 interface::dashboard,
                 interface::settings,
                 interface::delete,
