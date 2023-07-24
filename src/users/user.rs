@@ -8,7 +8,7 @@ use rocket::{
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::{keys::key_repository::fetch_key_by_secret, models::Permission};
+use crate::{keys::{key_repository::fetch_key_by_secret, key::ApiKey}, models::Permission};
 
 use super::user_repository::fetch_user;
 
@@ -23,6 +23,7 @@ pub struct User {
 
 pub struct AuthenticatedUser {
     pub user: User,
+    pub key: Option<ApiKey>,
 }
 
 #[rocket::async_trait]
@@ -53,7 +54,7 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
                     if user.permissions.is_empty() {
                         Outcome::Forward(())
                     } else {
-                        Outcome::Success(AuthenticatedUser { user })
+                        Outcome::Success(AuthenticatedUser { user, key: None })
                     }
                 }
                 Err(_) => Outcome::Forward(()),
@@ -75,7 +76,7 @@ impl<'r> FromRequest<'r> for AuthenticatedUser {
                             if user.permissions.is_empty() {
                                 Outcome::Forward(())
                             } else {
-                                Outcome::Success(AuthenticatedUser { user })
+                                Outcome::Success(AuthenticatedUser { user, key: Some(key) })
                             }
                         }
                         Err(_) => Outcome::Forward(()),

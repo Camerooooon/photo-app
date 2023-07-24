@@ -10,8 +10,6 @@ use sqlx::Pool;
 use sqlx_mysql::MySql;
 use std::time::SystemTime;
 
-use crate::users::user::AuthenticatedUser;
-
 use super::{
     user::User,
     user_repository::{delete_user, fetch_user, verify_hash, write_user},
@@ -126,9 +124,4 @@ pub async fn delete(
         }
         Err(_) => Err(Redirect::to("/settings/delete?error=DELETION_FAILED")),
     }
-}
-
-#[get("/api/user/status")]
-pub async fn status(user: AuthenticatedUser) -> Result<String, String> {
-    return Ok(format!("Logged in to: {}", user.user.username));
 }

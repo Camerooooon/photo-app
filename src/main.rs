@@ -56,7 +56,6 @@ async fn rocket() -> _ {
                 users::user_api::signup,
                 users::user_api::delete,
                 users::user_api::login,
-                users::user_api::status
             ],
         )
         .mount("/", routes![keys::key_api::new_key, keys::key_api::delete_key])
