@@ -1,4 +1,4 @@
-use std::time::{SystemTime, Duration};
+use std::time::SystemTime;
 
 use rocket::serde::{Deserialize, Serialize};
 
