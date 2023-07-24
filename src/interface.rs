@@ -1,5 +1,5 @@
 use chrono_humanize::{Accuracy, HumanTime, Tense};
-use rocket::http::{ContentType, CookieJar};
+use rocket::http::ContentType;
 use rocket::{fs::NamedFile, State};
 use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
