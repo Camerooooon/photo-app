@@ -55,3 +55,14 @@ pub async fn delete_user(pool: &Pool<MySql>, username: &String) -> Result<(), Er
         .await?;
     Ok(())
 }
+
+pub async fn verify_hash(
+    pool: &Pool<MySql>,
+    username: &String,
+    password: String,
+) -> Result<bool, Error> {
+    let response = sqlx::query!("SELECT * FROM users WHERE username = ?", username)
+        .fetch_one(pool)
+        .await?;
+    Ok(bcrypt::verify(password, &response.hashed_password).expect("Unable to compare the hashes"))
+}

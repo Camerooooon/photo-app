@@ -9,9 +9,9 @@ use sqlx::Pool;
 use sqlx_mysql::MySql;
 use std::time::SystemTime;
 
-use crate::{database, users::user::AuthenticatedUser};
+use crate::users::user::AuthenticatedUser;
 
-use super::{user::User, user_repository::{fetch_user, write_user, delete_user}};
+use super::{user::User, user_repository::{fetch_user, write_user, delete_user, verify_hash}};
 
 #[derive(FromForm)]
 pub struct UserCredentials {
@@ -72,7 +72,7 @@ pub async fn login(
     let username = credentials.username.clone();
     let password = credentials.password.clone();
 
-    let verified = database::verify_hash(pool, &username, password)
+    let verified = verify_hash(pool, &username, password)
         .await
         .map_err(|e| match e {
             sqlx::Error::RowNotFound => Redirect::to("/login?error=INVALID_USER_PASS"),
@@ -101,7 +101,7 @@ pub async fn delete(
     pool: &State<Pool<MySql>>,
     cookies: &CookieJar<'_>,
 ) -> Result<Redirect, Redirect>{
-    let verified = database::verify_hash(pool, &user.username, password.clone())
+    let verified = verify_hash(pool, &user.username, password.clone())
         .await
         .map_err(|e| match e {
             sqlx::Error::RowNotFound => Redirect::to("/settings/delete?error=VERIFICATION_FAILED"),

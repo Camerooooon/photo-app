@@ -18,16 +18,6 @@ pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn verify_hash(
-    pool: &Pool<MySql>,
-    username: &String,
-    password: String,
-) -> Result<bool, Error> {
-    let response = sqlx::query!("SELECT * FROM users WHERE username = ?", username)
-        .fetch_one(pool)
-        .await?;
-    Ok(bcrypt::verify(password, &response.hashed_password).expect("Unable to compare the hashes"))
-}
 
 /// Writes some image metadata to the specified database pool
 pub async fn write_image(pool: &Pool<MySql>, metadata: &ImageMeta) -> Result<(), Error> {
