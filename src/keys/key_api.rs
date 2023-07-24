@@ -13,8 +13,7 @@ use crate::{
 #[derive(FromForm)]
 pub struct CreateApiKeyRequest {
     pub permissions: Vec<Permission>,
-    /// Expiration in minutes
-    pub expiration: i32,
+    pub expiration_minutes: i32,
 }
 
 #[post("/api/key/new", data = "<request_opt>")]
@@ -32,7 +31,7 @@ pub async fn new_key(
             }
             let key = generate_api_key(
                 user.username,
-                Duration::from_secs_f32((request.expiration * 60) as f32),
+                Duration::from_secs_f32((request.expiration_minutes * 60) as f32),
                 request.permissions.to_vec(),
             );
             println!("{:?}", key);
