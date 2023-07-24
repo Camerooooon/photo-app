@@ -139,12 +139,3 @@ pub async fn delete(_user: User, error: Option<String>) -> Result<Template, Stri
     ))
 }
 
-#[get("/settings/key/new")]
-pub async fn new_api_key(user: User) -> Result<Template, String> {
-    Ok(Template::render(
-        "newapikey",
-        context! {
-            permissions: user.permissions,
-        },
-    ))
-}

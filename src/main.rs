@@ -33,7 +33,7 @@ async fn rocket() -> _ {
                 interface::dashboard,
                 interface::settings,
                 interface::delete,
-                interface::new_api_key,
+                keys::key_interface::new_api_key,
                 interface::semantic_js,
                 interface::semantic_css,
                 interface::semantic_icon_css,
