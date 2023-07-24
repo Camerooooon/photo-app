@@ -22,24 +22,27 @@ pub async fn new_key(
     user: User,
     request_opt: Form<Option<CreateApiKeyRequest>>,
 ) -> Redirect {
-    match request_opt.into_inner() {
-        Some(request) => {
-            for permission in &request.permissions {
-                if !user.permissions.contains(&permission) {
-                    return Redirect::to("/settings?notice=KEY_CREATION_ERROR");
-                }
-            }
-            let key = generate_api_key(
-                user.username,
-                Duration::from_secs_f32((request.expiration_minutes * 60) as f32),
-                request.permissions.to_vec(),
-            );
-            println!("{:?}", key);
-            match write_key(pool, &key).await {
-                Ok(_) => return Redirect::to("/settings?notice=KEY_CREATED"),
-                Err(_) => return Redirect::to("/settings?notice=KEY_CREATION_ERROR"),
-            };
+    if let Some(request) = request_opt.into_inner() {
+        let missing_permissions = request
+            .permissions
+            .iter()
+            .filter(|permission| !user.permissions.contains(permission))
+            .collect::<Vec<_>>();
+
+        if !missing_permissions.is_empty() {
+            return Redirect::to("/settings?notice=KEY_CREATION_ERROR");
         }
-        None => Redirect::to("/settings/key/new?error=MISSING_FIELDS"),
+
+        let key = generate_api_key(
+            user.username,
+            Duration::from_secs_f32((request.expiration_minutes * 60) as f32),
+            request.permissions.to_vec(),
+        );
+
+        match write_key(pool, &key).await {
+            Ok(_) => return Redirect::to("/settings?notice=KEY_CREATED"),
+            Err(_) => return Redirect::to("/settings?notice=KEY_CREATION_ERROR"),
+        };
     }
+    Redirect::to("/settings/key/new?error=MISSING_FIELDS")
 }
