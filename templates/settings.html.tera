@@ -67,7 +67,7 @@
                         </tr></thead>
                         <tbody>
                             
-                            {% for item in apikeys %}
+                            {% for item in apikeys | reverse %}
                             <tr>
                                 <td class="collapsing">
                                     {{item.created | format_time_ago}}
