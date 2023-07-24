@@ -3,7 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::MySql;
 
-use crate::models::Permission;
+use crate::models::{Permission, from_comma_seperated_string};
 
 use super::user::User;
 
@@ -40,13 +40,7 @@ pub async fn fetch_user(pool: &Pool<MySql>, username: &String) -> Result<User, E
     Ok(User {
         created: SystemTime::UNIX_EPOCH + Duration::from_millis(response.created as u64),
         username: response.username,
-        permissions: response
-            .permissions
-            .split(",")
-            .filter(|s| !s.is_empty())
-            .into_iter()
-            .map(|s| Permission::try_from(s).unwrap_or(Permission::Unknown))
-            .collect(),
+        permissions: from_comma_seperated_string(response.permissions),
         id: Some(response.id)
     })
 }
