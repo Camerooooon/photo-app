@@ -11,7 +11,7 @@ use std::time::SystemTime;
 
 use crate::{database, users::user::AuthenticatedUser};
 
-use super::{user::User, user_repository::{fetch_user, write_user}};
+use super::{user::User, user_repository::{fetch_user, write_user, delete_user}};
 
 #[derive(FromForm)]
 pub struct UserCredentials {
@@ -112,7 +112,7 @@ pub async fn delete(
         return Ok(Redirect::to("/settings/delete?error=INVALID_PASS"));
     }
 
-    match database::delete_user(pool, &user.username).await {
+    match delete_user(pool, &user.username).await {
         Ok(_) => { 
             cookies.remove_private(cookies.get_private("username").expect("The user should have cookies at this point"));
             Ok(Redirect::to("/"))

@@ -3,8 +3,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use sqlx::{Error, Pool};
 use sqlx_mysql::{MySql, MySqlPool};
 
-use crate::models::{Category, ImageGroup, ImageMeta, Permission, Privacy};
-use crate::keys::key::ApiKey;
+use crate::models::{Category, ImageGroup, ImageMeta, Privacy};
 
 pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> {
     MySqlPool::connect(database_url).await
@@ -16,13 +15,6 @@ pub async fn connect_database(database_url: &str) -> Result<Pool<MySql>, Error> 
 ///     - Imagegroups
 pub async fn initalise_database(pool: &Pool<MySql>) -> Result<(), Error> {
     sqlx::migrate!().run(pool).await?;
-    Ok(())
-}
-
-pub async fn delete_user(pool: &Pool<MySql>, username: &String) -> Result<(), Error> {
-    sqlx::query!("DELETE FROM users WHERE username = ?", username)
-        .execute(pool)
-        .await?;
     Ok(())
 }
 
