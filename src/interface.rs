@@ -6,7 +6,7 @@ use rocket_dyn_templates::{context, Template};
 use sqlx::Pool;
 use sqlx_mysql::MySql;
 
-use crate::database;
+use crate::images::image_repository::get_recent_images;
 use crate::keys::key_repository::get_recent_api_keys;
 use crate::users::user::User;
 
@@ -15,7 +15,7 @@ pub async fn index(pool: &State<Pool<MySql>>) -> Result<Template, String> {
     Ok(Template::render(
         "index",
         context! {
-            name: database::get_recent_images(&pool).await.map_err(|_| "Could not fetch recent images from database")?,
+            name: get_recent_images(&pool).await.map_err(|_| "Could not fetch recent images from database")?,
         },
     ))
 }

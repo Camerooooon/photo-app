@@ -3,6 +3,7 @@ extern crate rocket;
 
 pub mod users;
 pub mod keys;
+pub mod images;
 
 pub mod database;
 pub mod image_manager;
@@ -43,10 +44,10 @@ async fn rocket() -> _ {
         .mount(
             "/",
             routes![
-                image_manager::upload_image,
-                image_manager::get_image,
-                image_manager::get_image_meta,
-                image_manager::get_thumbnails
+                images::image_api::upload_image,
+                images::image_api::get_image,
+                images::image_api::get_image_meta,
+                images::image_api::get_thumbnails
             ],
         )
         .mount(
