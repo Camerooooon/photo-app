@@ -19,6 +19,18 @@
                 <span class="divider">/</span>
                 <div class="active section">Settings</div>
             </div>
+            {% if error %}
+            <div class="ui error message transition">
+                <i class="exclamation triangle icon"></i>
+                {{ error }}
+            </div>
+            {% endif %}
+            {% if notice %}
+            <div class="ui success message transition">
+                <i class="check icon"></i>
+                {{ notice }}
+            </div>
+            {% endif %}
             <h5 class="ui top negative attached header">
                 User Information
             </h5>

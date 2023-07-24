@@ -67,15 +67,33 @@ pub async fn dashboard(user: User) -> Result<Template, String> {
     ))
 }
 
-#[get("/settings")]
-pub async fn settings(user: User, pool: &State<Pool<MySql>>) -> Result<Template, String> {
+#[get("/settings?<error>&<notice>")]
+pub async fn settings(user: User, error: Option<String>, notice: Option<String>, pool: &State<Pool<MySql>>) -> Result<Template, String> {
+    let error_message = match error.unwrap_or_default().as_str() {
+        "KEY_CREATION_ERROR" => {
+            "Could not create your API key, something went wrong."
+        }
+        "KEY_DELETION_ERROR" => {
+            "Could not delete your API key, something went wrong."
+        }
+        _ => "",
+    };
+    let notice_message = match notice.unwrap_or_default().as_str() {
+        "KEY_CREATED" => "Your new api key has been created",
+        "KEY_DELETED" => {
+            "Your api key has been deleted"
+        }
+        _ => "",
+    };
     Ok(Template::render(
         "settings",
         context! {
             apikeys: get_recent_api_keys(&pool, &user).await.unwrap_or(vec![]),
             permissions: user.permissions,
             created: HumanTime::from(user.created).to_text_en(Accuracy::Rough, Tense::Past),
-            username: user.username
+            username: user.username,
+            error: error_message,
+            notice: notice_message,
         },
     ))
 }

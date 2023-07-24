@@ -32,7 +32,7 @@ pub async fn new_key(
             .collect::<Vec<_>>();
 
         if !missing_permissions.is_empty() {
-            return Redirect::to("/settings?notice=KEY_CREATION_ERROR");
+            return Redirect::to("/settings?error=KEY_CREATION_ERROR");
         }
 
         let key = generate_api_key(
@@ -43,7 +43,7 @@ pub async fn new_key(
 
         match write_key(pool, &key).await {
             Ok(_) => return Redirect::to("/settings?notice=KEY_CREATED"),
-            Err(_) => return Redirect::to("/settings?notice=KEY_CREATION_ERROR"),
+            Err(_) => return Redirect::to("/settings?error=KEY_CREATION_ERROR"),
         };
     }
     Redirect::to("/settings/key/new?error=MISSING_FIELDS")
@@ -56,6 +56,6 @@ pub async fn delete_key(
 ) -> Redirect {
     match super::key_repository::delete_key_by_id(pool,id.into_inner()).await {
         Ok(_) => {return Redirect::to("/settings?notice=KEY_DELETED")},
-        Err(_) => {return Redirect::to("/settings?notice=KEY_DELETION_ERROR")},
+        Err(_) => {return Redirect::to("/settings?error=KEY_DELETION_ERROR")},
     };
 }
